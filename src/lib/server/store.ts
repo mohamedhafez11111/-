@@ -57,7 +57,9 @@ export function storeBackend(): "supabase" | "file" {
 async function sbFetch(pathname: string, init: RequestInit = {}) {
   const url = `${process.env.SUPABASE_URL!.replace(/\/$/, "")}/rest/v1/${pathname}`;
   const key = process.env.SUPABASE_SERVICE_ROLE_KEY!;
-  return fetch(url, { ...init, headers: { apikey: key, Authorization: `Bearer ${key}`, "Content-Type": "application/json", ...(init.headers ?? {}) }, cache: "no-store" });
+  // مفاتيح Supabase الجديدة (sb_secret_…) تُرسل في apikey فقط؛ أما المفتاح القديم (JWT) فيُرسل أيضاً في Authorization
+  const auth: Record<string, string> = key.startsWith("eyJ") ? { Authorization: `Bearer ${key}` } : {};
+  return fetch(url, { ...init, headers: { apikey: key, ...auth, "Content-Type": "application/json", ...(init.headers ?? {}) }, cache: "no-store" });
 }
 
 let fileCache: Partial<StoreShape> | null = null;
