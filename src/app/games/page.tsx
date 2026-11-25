@@ -1,7 +1,7 @@
 "use client";
 import Link from "next/link";
 import { GAME_META, GAME_IDS } from "@/components/games/meta";
-import { PageHeader, Bar } from "@/components/ui/bits";
+import { PageHeader, Bar, usePublicContent } from "@/components/ui/bits";
 import { useProgress, levelOf, BADGES } from "@/lib/progress";
 import { useLocal } from "@/lib/storage";
 import { Num } from "@/components/ui/MathText";
@@ -10,6 +10,7 @@ export default function GamesPage() {
   const { p } = useProgress();
   const [best] = useLocal<Record<string, number>>("game-best", {});
   const lv = levelOf(p.xp);
+  const { data: pub } = usePublicContent();
   return (
     <div>
       <PageHeader icon="game" title="الألعاب والتحديات" subtitle="ألعاب تعليمية حقيقية مرتبطة بمهارات المنهج. التحفيز هنا لدعم الفهم: كل لعبة تعرض الحل الصحيح وسبب الخطأ." />
@@ -19,7 +20,7 @@ export default function GamesPage() {
         <div><div className="text-sm muted">الألعاب الملعوبة</div><div className="text-2xl font-bold"><Num>{p.games.length}</Num></div><Link href="/review#daily" className="text-sm font-semibold text-brand-600">التحدي اليومي ←</Link></div>
       </div>
       <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-        {GAME_IDS.map((id) => {
+        {GAME_IDS.filter((id) => !pub.hiddenGames?.includes(id)).map((id) => {
           const g = GAME_META[id];
           return (
             <Link key={id} href={`/games/${id}`} className="card group flex flex-col gap-2 overflow-hidden transition hover:-translate-y-0.5 hover:shadow-lg">

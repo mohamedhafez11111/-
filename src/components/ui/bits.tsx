@@ -82,8 +82,9 @@ export interface PublicContent {
   hiddenQuestions: string[];
   exams: TeacherExam[];
   lessonNotes: LessonNote[];
+  hiddenGames: string[];
 }
-const EMPTY_PUBLIC: PublicContent = { announcements: [], questions: [], hiddenQuestions: [], exams: [], lessonNotes: [] };
+const EMPTY_PUBLIC: PublicContent = { announcements: [], questions: [], hiddenQuestions: [], exams: [], lessonNotes: [], hiddenGames: [] };
 
 /** محتوى يضيفه المعلم من لوحة الإدارة (يُحدَّث دون إعادة بناء التطبيق) مع نسخة محلية للعمل دون اتصال */
 export function usePublicContent(): { data: PublicContent; loaded: boolean; offline: boolean } {

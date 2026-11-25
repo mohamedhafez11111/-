@@ -33,6 +33,7 @@ export interface StoreShape {
   exams: TeacherExam[];
   lessonNotes: LessonNote[];
   usage: UsageDay[];
+  hiddenGames: string[];
 }
 
 export const DEFAULT_AI: AiSettings = {
@@ -45,7 +46,7 @@ export const DEFAULT_AI: AiSettings = {
   extraInstructions: "",
 };
 
-const DEFAULTS: StoreShape = { ai: DEFAULT_AI, announcements: [], questions: [], hiddenQuestions: [], exams: [], lessonNotes: [], usage: [] };
+const DEFAULTS: StoreShape = { ai: DEFAULT_AI, announcements: [], questions: [], hiddenQuestions: [], exams: [], lessonNotes: [], usage: [], hiddenGames: [] };
 
 const FILE = path.join(process.cwd(), "data", "store.json");
 
