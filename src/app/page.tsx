@@ -5,6 +5,7 @@ import { useProgress, curriculumProgress, unitMastery, lessonProgress, levelOf, 
 import { Icon } from "@/components/ui/Icon";
 import { Ring, Bar, UnitBadge, usePublicContent } from "@/components/ui/bits";
 import { Num } from "@/components/ui/MathText";
+import { useTutorAvailable } from "@/lib/tutor";
 
 function greeting() {
   const h = new Date().getHours();
@@ -17,6 +18,7 @@ export default function Home() {
   const prog = curriculumProgress(p);
   const st = stats(p);
   const lv = levelOf(p.xp);
+  const tutorOn = useTutorAvailable();
   const nextLesson = p.lastLesson && !p.lessons[p.lastLesson]?.completed
     ? LESSON_BY_ID[p.lastLesson]
     : LESSONS.find((l) => !p.lessons[l.id]?.completed) ?? LESSONS[0];
@@ -30,7 +32,7 @@ export default function Home() {
           <div className="space-y-2">
             <p className="font-semibold text-brand-600">{greeting()} 👋</p>
             <h1 className="text-2xl font-bold sm:text-3xl">أهلاً بك في منصة الرياضيات التفاعلية</h1>
-            <p className="max-w-xl muted">كل ما تحتاجه لرياضيات الصف العاشر – الفصل الدراسي الأول في مكان واحد: دروس تفاعلية، مختبرات، اختبارات، ألعاب، ومعلم ذكي.</p>
+            <p className="max-w-xl muted">كل ما تحتاجه لرياضيات الصف العاشر – الفصل الدراسي الأول في مكان واحد: دروس تفاعلية، مختبرات، {tutorOn ? "اختبارات، ألعاب، ومعلم ذكي." : "اختبارات، وألعاب."}</p>
             <div className="flex flex-wrap gap-2 pt-2">
               <Link href={`/lessons/${nextLesson.id}`} className="btn btn-primary"><Icon name="play" size={18} /> {ready && p.lastLesson ? "تابع التعلّم" : "ابدأ التعلّم"}: {lc(nextLesson.id)} {nextLesson.title}</Link>
               <Link href="/curriculum" className="btn btn-ghost"><Icon name="map" size={18} /> خريطة المنهج</Link>
@@ -63,7 +65,7 @@ export default function Home() {
       {/* اختصارات */}
       <section aria-label="اختصارات" className="grid grid-cols-2 gap-3 md:grid-cols-4">
         {[
-          { href: "/tutor", icon: "bot" as const, t: "المعلم الذكي", d: "اسأل واحصل على تلميح", c: "#1d63c9" },
+          ...(tutorOn ? [{ href: "/tutor", icon: "bot" as const, t: "المعلم الذكي", d: "اسأل واحصل على تلميح", c: "#1d63c9" }] : [{ href: "/labs", icon: "flask" as const, t: "المختبرات", d: "جرّب وغيّر القيم", c: "#1d63c9" }]),
           { href: "/whiteboard", icon: "board" as const, t: "السبورة", d: "ارسم وحل", c: "#0e9f6e" },
           { href: "/exams", icon: "exam" as const, t: "الاختبارات", d: "اختبر نفسك", c: "#7c3aed" },
           { href: "/games", icon: "game" as const, t: "الألعاب", d: "تحدَّ وتعلّم", c: "#ea580c" },

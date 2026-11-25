@@ -6,7 +6,7 @@ import { Icon } from "@/components/ui/Icon";
 import { Tally, DataTable, StemLeaf } from "@/components/figures/Figure";
 import { BarChart, PieChart, BoxPlot, Histogram, CumulativeCurve, PALETTE } from "@/components/figures/Charts";
 import { Plane } from "@/components/figures/Plane";
-import { toWesternDigits } from "@/lib/math/expr";
+import { toWesternDigits, toEasternDigits as E } from "@/lib/math/expr";
 import * as S from "@/lib/math/stats";
 
 const r2 = (v: number) => (Number.isFinite(v) ? Number(v.toFixed(2)) : NaN);
@@ -20,7 +20,7 @@ export function parseList(text: string): { nums: number[]; words: string[]; allN
 
 // ======================= منظّم البيانات =======================
 export function DataOrganizerLab() {
-  const [text, setText] = useState("3 5 1 6 3 2 4 3 6 5 1 3 2 6 4 3 5 6 2 1");
+  const [text, setText] = useState(E("3 5 1 6 3 2 4 3 6 5 1 3 2 6 4 3 5 6 2 1"));
   const [grouped, setGrouped] = useState(false);
   const [start, setStart] = useState(0);
   const [width, setWidth] = useState(10);
@@ -51,8 +51,8 @@ export function DataOrganizerLab() {
         <textarea className="input min-h-[120px]" value={text} onChange={(e) => setText(e.target.value)} />
       </label>
       <div className="flex flex-wrap gap-1.5 text-xs">
-        <button className="chip bg-black/5 !py-1.5" onClick={() => setText("3 5 1 6 3 2 4 3 6 5 1 3 2 6 4 3 5 6 2 1")}>رميات نرد</button>
-        <button className="chip bg-black/5 !py-1.5" onClick={() => { setText("45 52 38 61 47 55 49 38 60 52 41 67 58 44 50"); setStart(30); setWidth(10); }}>درجات</button>
+        <button className="chip bg-black/5 !py-1.5" onClick={() => setText(E("3 5 1 6 3 2 4 3 6 5 1 3 2 6 4 3 5 6 2 1"))}>رميات نرد</button>
+        <button className="chip bg-black/5 !py-1.5" onClick={() => { setText(E("45 52 38 61 47 55 49 38 60 52 41 67 58 44 50")); setStart(30); setWidth(10); }}>درجات</button>
         <button className="chip bg-black/5 !py-1.5" onClick={() => setText("أحمر أزرق أحمر أخضر أزرق أحمر أصفر أزرق أحمر أخضر")}>ألوان (نوعية)</button>
       </div>
       {allNumeric && (
@@ -148,7 +148,7 @@ export function ChartsLab() {
 // ======================= المقاييس الإحصائية =======================
 export function StatsMeasuresLab() {
   const [mode, setMode] = useState<"raw" | "freq" | "grouped">("raw");
-  const [text, setText] = useState("12 15 11 15 18 14 13");
+  const [text, setText] = useState(E("12 15 11 15 18 14 13"));
   const [freqRows, setFreqRows] = useState([{ value: 0, freq: 4 }, { value: 1, freq: 7 }, { value: 2, freq: 5 }, { value: 3, freq: 3 }, { value: 4, freq: 1 }]);
   const [groups, setGroups] = useState([{ lower: 120, upper: 130, freq: 12 }, { lower: 130, upper: 140, freq: 16 }, { lower: 140, upper: 150, freq: 38 }, { lower: 150, upper: 160, freq: 24 }, { lower: 160, upper: 170, freq: 10 }]);
   const { nums } = parseList(text);
@@ -164,7 +164,7 @@ export function StatsMeasuresLab() {
       </div>
       {mode === "raw" && (<>
         <textarea className="input min-h-[100px]" value={text} onChange={(e) => setText(e.target.value)} aria-label="البيانات" />
-        <button className="btn btn-soft w-full !min-h-[40px] text-sm" onClick={() => setText(text + " " + (Math.max(...nums, 0) * 3 || 100))}>أضف قيمة متطرفة</button>
+        <button className="btn btn-soft w-full !min-h-[40px] text-sm" onClick={() => setText(text + " " + E(String(Math.max(...nums, 0) * 3 || 100)))}>أضف قيمة متطرفة</button>
       </>)}
       {mode === "freq" && (
         <div className="space-y-1.5">
@@ -235,8 +235,8 @@ export function ClassEditor({ rows, onChange }: { rows: { lower: number; upper: 
 
 // ======================= المخطط الصندوقي =======================
 export function BoxPlotLab() {
-  const [a, setA] = useState("8 9 10 14 14 15 19");
-  const [b, setB] = useState("1 5 6 8 8 10 11 12 12 13 14 16");
+  const [a, setA] = useState(E("8 9 10 14 14 15 19"));
+  const [b, setB] = useState(E("1 5 6 8 8 10 11 12 12 13 14 16"));
   const [k, setK] = useState(80);
   const A = parseList(a).nums, B = parseList(b).nums;
   const qa = A.length ? S.quartiles(A) : null, qb = B.length ? S.quartiles(B) : null;

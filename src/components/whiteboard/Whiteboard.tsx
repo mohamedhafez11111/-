@@ -10,6 +10,7 @@ import { compileFn, parse } from "@/lib/math/expr";
 import { readLS, writeLS } from "@/lib/storage";
 import { Calculator } from "@/components/tools/Tools";
 import type { IconName } from "@/content/types";
+import { useSettings } from "@/lib/settings";
 
 type Pt = { x: number; y: number };
 type Base = { id: string; color: string; width: number };
@@ -28,6 +29,9 @@ type Tool = "select" | "pen" | "hl" | "eraser" | "line" | "arrow" | "rect" | "el
 const COLORS = ["#0f2a4a", "#dc2626", "#2b7de9", "#16a34a", "#ea580c", "#7c3aed", "#db2777", "#ffffff"];
 const uid = () => Math.random().toString(36).slice(2, 9);
 const imgCache = new Map<string, HTMLImageElement>();
+/** أرقام اللوحة تتبع إعداد الأرقام في المنصة */
+let EASTERN = true;
+const dg = (s: string) => (EASTERN ? s.replace(/[0-9]/g, (d) => "٠١٢٣٤٥٦٧٨٩"[Number(d)]) : s);
 
 function bbox(o: Obj, ctx?: CanvasRenderingContext2D): { x: number; y: number; w: number; h: number } {
   switch (o.t) {
@@ -58,7 +62,7 @@ type MNode = ReturnType<typeof parseMath>[number];
 function measureMath(ctx: CanvasRenderingContext2D, nodes: MNode[], size: number): { w: number; up: number; down: number } {
   let w = 0, up = size * 0.8, down = size * 0.25;
   for (const n of nodes) {
-    if (typeof n === "string") { ctx.font = `${size}px "IBM Plex Sans Arabic", Tahoma, sans-serif`; w += ctx.measureText(n).width; }
+    if (typeof n === "string") { ctx.font = `${size}px "IBM Plex Sans Arabic", Tahoma, sans-serif`; w += ctx.measureText(dg(n)).width; }
     else if (n.t === "frac") {
       const a = measureMath(ctx, n.n, size * 0.85), b = measureMath(ctx, n.d, size * 0.85);
       w += Math.max(a.w, b.w) + size * 0.3; up = Math.max(up, a.up + a.down + size * 0.3); down = Math.max(down, b.up + b.down + size * 0.1);
@@ -75,8 +79,8 @@ function drawMath(ctx: CanvasRenderingContext2D, nodes: MNode[], x: number, y: n
     if (typeof n === "string") {
       ctx.font = `${size}px "IBM Plex Sans Arabic", Tahoma, sans-serif`;
       ctx.fillStyle = color; ctx.textAlign = "right"; ctx.direction = "rtl";
-      ctx.fillText(n, cx, y);
-      cx -= ctx.measureText(n).width;
+      ctx.fillText(dg(n), cx, y);
+      cx -= ctx.measureText(dg(n)).width;
     } else if (n.t === "frac") {
       const s = size * 0.85;
       const a = measureMath(ctx, n.n, s), b = measureMath(ctx, n.d, s);
@@ -131,7 +135,7 @@ function drawObj(ctx: CanvasRenderingContext2D, o: Obj, redraw: () => void) {
     case "triangle": ctx.beginPath(); ctx.moveTo((o.a.x + o.b.x) / 2, o.a.y); ctx.lineTo(o.b.x, o.b.y); ctx.lineTo(o.a.x, o.b.y); ctx.closePath(); ctx.stroke(); break;
     case "text":
       ctx.font = `${o.size}px "IBM Plex Sans Arabic", Tahoma, sans-serif`; ctx.textAlign = "right"; ctx.direction = "rtl";
-      ctx.fillText(o.text, o.p.x, o.p.y);
+      ctx.fillText(dg(o.text), o.p.x, o.p.y);
       break;
     case "math": drawMath(ctx, parseMath(o.text), o.p.x, o.p.y, o.size, o.color); break;
     case "axes": case "graph": {
@@ -162,7 +166,7 @@ function drawObj(ctx: CanvasRenderingContext2D, o: Obj, redraw: () => void) {
         }
         ctx.stroke(); ctx.restore();
         ctx.fillStyle = "#2b7de9"; ctx.font = "15px Tahoma"; ctx.textAlign = "right"; ctx.direction = "rtl";
-        ctx.fillText(`ص = ${o.expr}`, x + w - 6, y + h - 8);
+        ctx.fillText(dg(`ص = ${o.expr}`), x + w - 6, y + h - 8);
       }
       break;
     }
@@ -172,7 +176,7 @@ function drawObj(ctx: CanvasRenderingContext2D, o: Obj, redraw: () => void) {
         const cxp = o.p.x + (row.length - 1 - k) * o.cw; // الأعمدة من اليمين
         if (r === 0) { ctx.save(); ctx.globalAlpha = 0.1; ctx.fillRect(cxp, o.p.y, o.cw, o.ch); ctx.restore(); }
         ctx.strokeRect(cxp, o.p.y + r * o.ch, o.cw, o.ch);
-        ctx.fillText(c, cxp + o.cw / 2, o.p.y + r * o.ch + o.ch / 2 + 6);
+        ctx.fillText(dg(c), cxp + o.cw / 2, o.p.y + r * o.ch + o.ch / 2 + 6);
       }));
       break;
     case "chart": {
@@ -184,8 +188,8 @@ function drawObj(ctx: CanvasRenderingContext2D, o: Obj, redraw: () => void) {
         const bh = (v / max) * (h - 20);
         ctx.globalAlpha = 0.75; ctx.fillRect(x + bw * 0.5 + i * bw * 1.5, y + h - bh, bw, bh); ctx.globalAlpha = 1;
         ctx.font = "13px Tahoma"; ctx.textAlign = "center";
-        ctx.fillText(String(v), x + bw + i * bw * 1.5, y + h - bh - 5);
-        ctx.fillText(o.labels[i] ?? "", x + bw + i * bw * 1.5, y + h + 16);
+        ctx.fillText(dg(String(v)), x + bw + i * bw * 1.5, y + h - bh - 5);
+        ctx.fillText(dg(o.labels[i] ?? ""), x + bw + i * bw * 1.5, y + h + 16);
       });
       break;
     }
@@ -208,6 +212,8 @@ const TOOLBAR: { id: Tool; icon: IconName; label: string }[] = [
 ];
 
 export function Whiteboard() {
+  const { settings } = useSettings();
+  EASTERN = settings.digits === "eastern";
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const wrapRef = useRef<HTMLDivElement>(null);
   const [objs, setObjs] = useState<Obj[]>([]);
@@ -266,7 +272,7 @@ export function Whiteboard() {
       const b = bbox(s, ctx);
       ctx.save(); ctx.strokeStyle = "#2b7de9"; ctx.setLineDash([6, 4]); ctx.lineWidth = 1.5; ctx.strokeRect(b.x - 6, b.y - 6, b.w + 12, b.h + 12); ctx.restore();
     }
-  }, [objs, draft, sel, grid, size, dark]);
+  }, [objs, draft, sel, grid, size, dark, settings.digits]);
   redrawRef.current = redraw;
   useEffect(() => { redraw(); }, [redraw]);
 

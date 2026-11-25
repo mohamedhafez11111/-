@@ -10,6 +10,7 @@ import { recordAnswer } from "@/lib/progress";
 import { generate } from "@/content/generators";
 import { BANK_QUESTIONS, skillName, lc } from "@/content";
 import { readLS, writeLS } from "@/lib/storage";
+import { useTutorAvailable } from "@/lib/tutor";
 
 function shuffleIdx(n: number, seed: string): number[] {
   // ترتيب عشوائي ثابت لكل سؤال (حتى لا يتغير عند إعادة العرض)
@@ -253,6 +254,7 @@ export function PracticeQuestion({ question, onDone, index, total, compact }: { 
   const [showHint, setShowHint] = useState(false);
   const [saved, setSaved] = useState(false);
   const [similarMsg, setSimilarMsg] = useState("");
+  const tutorOn = useTutorAvailable();
 
   useEffect(() => { setQ(question); setR(emptyResponse(question)); setResult(null); setShowHint(false); setSimilarMsg(""); }, [question]);
   useEffect(() => { setSaved(readLS<string[]>("hard", []).includes(q.id)); }, [q.id]);
@@ -320,7 +322,7 @@ export function PracticeQuestion({ question, onDone, index, total, compact }: { 
           </>
         )}
         <button className="btn btn-ghost" onClick={toggleSave} aria-pressed={saved}><Icon name="bookmark" size={18} /> {saved ? "محفوظ في الصعبة" : "احفظ كسؤال صعب"}</button>
-        <button className="btn btn-ghost" onClick={askTutor}><Icon name="bot" size={18} /> اسأل المعلم الذكي</button>
+        {tutorOn && <button className="btn btn-ghost" onClick={askTutor}><Icon name="bot" size={18} /> اسأل المعلم الذكي</button>}
       </div>
     </div>
   );

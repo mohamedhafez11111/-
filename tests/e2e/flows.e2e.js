@@ -2,6 +2,8 @@ const { chromium, devices } = require('playwright');
 const BASE = process.env.BASE_URL || 'http://localhost:3100';
 const OUT = process.argv[2] || require('os').tmpdir();
 const results = [];
+// تحويل الأرقام العربية الشرقية إلى غربية للمقارنة
+const W = (t) => t.replace(/[٠-٩]/g, (d) => String('٠١٢٣٤٥٦٧٨٩'.indexOf(d)));
 const ok = (name, cond, extra = '') => results.push(`${cond ? 'PASS' : 'FAIL'} ${name}${extra ? ' — ' + extra : ''}`);
 (async () => {
   const browser = await chromium.launch();
@@ -40,19 +42,19 @@ const ok = (name, cond, extra = '') => results.push(`${cond ? 'PASS' : 'FAIL'} $
   // 5) مختبر الربيعات (طريقة الكتاب)
   await page.goto(BASE + '/labs/box-plot', { waitUntil: 'networkidle' });
   await page.waitForTimeout(600);
-  const boxTxt = await page.locator('main').innerText();
+  const boxTxt = W(await page.locator('main').innerText());
   ok('box plot lab quartiles (book example: IQR 6 and 5.5)', boxTxt.includes('5.5') && boxTxt.includes('12.5'));
 
   // 6) مختبر الدوال: المعكوس
   await page.goto(BASE + '/labs/functions', { waitUntil: 'networkidle' });
   await page.waitForTimeout(600);
-  const fnTxt = await page.locator('main').innerText();
+  const fnTxt = W(await page.locator('main').innerText());
   ok('functions lab inverse of 2x+5', /د\s*-1\s*\(س\)|-1/.test(fnTxt) && fnTxt.includes('5'));
   await page.screenshot({ path: OUT + '/lab-functions.png', fullPage: true });
 
   // 7) بنك الأسئلة + تصفية
   await page.goto(BASE + '/bank?lesson=5-3', { waitUntil: 'networkidle' });
-  const count = await page.locator('text=سؤالاً مطابقاً').innerText();
+  const count = W(await page.locator('text=سؤالاً مطابقاً').innerText());
   ok('bank filters by lesson', /\d/.test(count), count);
 
   // 8) اختبار كامل
@@ -87,12 +89,10 @@ const ok = (name, cond, extra = '') => results.push(`${cond ? 'PASS' : 'FAIL'} $
   ok('function builder renders target table', await page.getByText('المطلوب د(س)').isVisible());
   await page.screenshot({ path: OUT + '/game-fb.png' });
 
-  // 11) المعلم الذكي يوضح أنه غير مفعّل
+  // 11) المعلم الذكي مخفي عن الطلاب عند عدم ضبط مفتاح الخدمة
   await page.goto(BASE + '/', { waitUntil: 'networkidle' });
-  await page.getByRole('button', { name: 'فتح المعلم الذكي' }).click();
-  await page.waitForSelector('text=المعلم الذكي غير متاح حالياً');
-  ok('tutor shows clear not-configured state', true);
-  await page.keyboard.press('Escape');
+  await page.waitForTimeout(500);
+  ok('tutor hidden when not configured', (await page.getByRole('button', { name: 'فتح المعلم الذكي' }).count()) === 0 && (await page.getByRole('button', { name: /اسأل المعلم الذكي/ }).count()) === 0);
 
   // 12) الملاحظات تُحفظ بعد التحديث
   await page.goto(BASE + '/notes', { waitUntil: 'networkidle' });

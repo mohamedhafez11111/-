@@ -15,6 +15,7 @@ import { GAME_META } from "@/components/games/meta";
 import { openLesson, markSection, useProgress } from "@/lib/progress";
 import { useLocal, writeLS } from "@/lib/storage";
 import { usePublicContent, UnitBadge } from "@/components/ui/bits";
+import { useTutorAvailable } from "@/lib/tutor";
 
 const toneStyle: Record<string, string> = {
   info: "border-brand-400 bg-brand-50 dark:bg-brand-900/30",
@@ -133,6 +134,7 @@ export function LessonView({ lesson }: { lesson: Lesson }) {
   const [notes, setNotes] = useLocal<Record<string, string>>("lesson-notes", {});
   const [bookmarks, setBookmarks] = useLocal<string[]>("bookmarks", []);
   const [summarySaved, setSummarySaved] = useState(false);
+  const tutorOn = useTutorAvailable();
 
   useEffect(() => { openLesson(lesson.id); }, [lesson.id]);
 
@@ -286,7 +288,7 @@ export function LessonView({ lesson }: { lesson: Lesson }) {
           <div className="flex flex-wrap gap-2">
             {lesson.labs.map((l) => <Link key={l} href={`/labs/${l}`} className="btn btn-soft"><Icon name="flask" size={18} /> {LAB_META[l].title}</Link>)}
             {lesson.games.map((g) => <Link key={g} href={`/games/${g}`} className="btn btn-ghost"><Icon name="game" size={18} /> {GAME_META[g].title}</Link>)}
-            <button className="btn btn-ghost" onClick={() => window.dispatchEvent(new Event("m10-open-tutor"))}><Icon name="bot" size={18} /> اسأل المعلم الذكي عن الدرس</button>
+            {tutorOn && <button className="btn btn-ghost" onClick={() => window.dispatchEvent(new Event("m10-open-tutor"))}><Icon name="bot" size={18} /> اسأل المعلم الذكي عن الدرس</button>}
           </div>
           <p className="text-sm muted">ارجع إلى كتاب النشاط ص <Num>{lesson.abPages}</Num> لحل تمارين الدرس الورقية.</p>
         </Section>

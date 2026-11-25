@@ -7,6 +7,7 @@ import { NAV, NAV_VISIBLE, BOTTOM_NAV } from "./nav";
 import { SettingsContext, DEFAULT_SETTINGS, type Settings } from "@/lib/settings";
 import { readLS, writeLS } from "@/lib/storage";
 import { TutorPanel } from "@/components/tutor/TutorPanel";
+import { useTutorAvailable } from "@/lib/tutor";
 import { useProgress, levelOf } from "@/lib/progress";
 import { Num } from "@/components/ui/MathText";
 
@@ -109,6 +110,35 @@ export function AppShell({ children }: { children: ReactNode }) {
 
   useEffect(() => setDrawer(false), [path]);
 
+  // تحويل جميع الأرقام الظاهرة إلى أرقام عربية شرقية (٠١٢٣…) في كل الصفحات، دون المساس بحقول الإدخال
+  useEffect(() => {
+    if (settings.digits !== "eastern") return;
+    const SKIP = "input, textarea, script, style, code, pre, [data-keep-digits]";
+    const MAP = "٠١٢٣٤٥٦٧٨٩";
+    const fix = (t: Text) => {
+      const v = t.nodeValue;
+      if (!v || !/[0-9]/.test(v)) return;
+      const el = t.parentElement;
+      if (!el || el.closest(SKIP)) return;
+      const nv = v.replace(/[0-9]/g, (d) => MAP[Number(d)]);
+      if (nv !== v) t.nodeValue = nv;
+    };
+    const walk = (n: Node) => {
+      if (n.nodeType === Node.TEXT_NODE) return fix(n as Text);
+      const w = document.createTreeWalker(n, NodeFilter.SHOW_TEXT);
+      for (let c = w.nextNode(); c; c = w.nextNode()) fix(c as Text);
+    };
+    walk(document.body);
+    const obs = new MutationObserver((ms) => {
+      for (const m of ms) {
+        if (m.type === "characterData") fix(m.target as Text);
+        else m.addedNodes.forEach(walk);
+      }
+    });
+    obs.observe(document.body, { subtree: true, childList: true, characterData: true });
+    return () => obs.disconnect();
+  }, [settings.digits]);
+
   const setSettings = (s: Partial<Settings>) => {
     setSettingsState((cur) => {
       const n = { ...cur, ...s };
@@ -118,6 +148,8 @@ export function AppShell({ children }: { children: ReactNode }) {
   };
 
   const isBoard = path.startsWith("/whiteboard");
+  const tutorOn = useTutorAvailable();
+  const navItems = NAV_VISIBLE.filter((n) => tutorOn || n.href !== "/tutor");
 
   return (
     <SettingsContext.Provider value={{ settings, setSettings }}>
@@ -127,9 +159,9 @@ export function AppShell({ children }: { children: ReactNode }) {
         <aside className="no-print sticky top-0 hidden h-screen flex-col gap-1 overflow-y-auto border-l line surface px-3 py-4 lg:flex">
           <div className="mb-4 px-2"><Logo /></div>
           <nav aria-label="القائمة الرئيسية" className="flex flex-col gap-0.5">
-            {NAV_VISIBLE.map((n, i) => (
+            {navItems.map((n, i) => (
               <div key={n.href}>
-                {i > 0 && NAV_VISIBLE[i - 1].group !== n.group && <div className="mx-3 my-2 border-t line" />}
+                {i > 0 && navItems[i - 1].group !== n.group && <div className="mx-3 my-2 border-t line" />}
                 <Link href={n.href} className={`flex items-center gap-3 rounded-xl px-3 py-2.5 text-[15px] font-medium transition ${isActive(path, n.href) ? "bg-brand-50 text-brand-700 dark:bg-brand-900/60 dark:text-white" : "hover:bg-black/5 dark:hover:bg-white/5"}`} aria-current={isActive(path, n.href) ? "page" : undefined}>
                   <Icon name={n.icon} size={20} />
                   {n.label}
@@ -146,7 +178,7 @@ export function AppShell({ children }: { children: ReactNode }) {
             <div className="hidden lg:block" />
             <div className="flex items-center gap-2">
               <XpPill />
-              <button className="btn btn-ghost !min-h-[40px] !px-3 text-sm" onClick={() => setSettings({ digits: settings.digits === "western" ? "eastern" : "western" })} title="تبديل شكل الأرقام" aria-label="تبديل شكل الأرقام">
+              <button className="btn btn-ghost !min-h-[40px] !px-3 text-sm" onClick={() => { setSettings({ digits: settings.digits === "western" ? "eastern" : "western" }); if (settings.digits === "eastern") setTimeout(() => window.location.reload(), 50); }} title="تبديل شكل الأرقام" aria-label="تبديل شكل الأرقام" data-keep-digits>
                 {settings.digits === "western" ? "١٢٣" : "123"}
               </button>
               <button className="btn btn-ghost !min-h-[40px] !px-3" onClick={() => setSettings({ theme: settings.theme === "dark" ? "light" : "dark" })} aria-label="الوضع الليلي" title="الوضع الليلي/النهاري">
@@ -182,7 +214,7 @@ export function AppShell({ children }: { children: ReactNode }) {
           <div className="absolute inset-0 bg-black/40" onClick={() => setDrawer(false)} />
           <div className="absolute inset-y-0 right-0 flex w-[85%] max-w-sm flex-col gap-1 overflow-y-auto surface p-4 anim-pop">
             <div className="mb-3 flex items-center justify-between"><Logo /><button className="btn btn-ghost !px-3" onClick={() => setDrawer(false)} aria-label="إغلاق"><Icon name="close" /></button></div>
-            {NAV_VISIBLE.map((n) => (
+            {navItems.map((n) => (
               <Link key={n.href} href={n.href} className={`flex items-center gap-3 rounded-xl px-3 py-3 font-medium ${isActive(path, n.href) ? "bg-brand-50 text-brand-700 dark:bg-brand-900/60 dark:text-white" : ""}`}>
                 <Icon name={n.icon} size={20} />{n.label}
               </Link>
@@ -200,12 +232,12 @@ export function AppShell({ children }: { children: ReactNode }) {
       )}
 
       {/* زر المعلم الذكي العائم */}
-      {!path.startsWith("/tutor") && (
+      {tutorOn && !path.startsWith("/tutor") && (
         <button onClick={() => setTutorOpen(true)} className="no-print fixed bottom-20 left-4 z-40 flex items-center gap-2 rounded-full bg-gradient-to-br from-brand-500 to-brand-700 px-4 py-3 font-bold text-white shadow-lg lg:bottom-6" aria-label="فتح المعلم الذكي">
           <Icon name="bot" /> <span className="hidden sm:inline">المعلم الذكي</span>
         </button>
       )}
-      {tutorOpen && <TutorPanel onClose={() => setTutorOpen(false)} />}
+      {tutorOn && tutorOpen && <TutorPanel onClose={() => setTutorOpen(false)} />}
       <BadgeToast />
     </SettingsContext.Provider>
   );

@@ -7,7 +7,7 @@ export interface Settings {
   fontScale: number;
 }
 
-export const DEFAULT_SETTINGS: Settings = { digits: "western", theme: "light", fontScale: 1 };
+export const DEFAULT_SETTINGS: Settings = { digits: "eastern", theme: "light", fontScale: 1 };
 
 export const SettingsContext = createContext<{ settings: Settings; setSettings: (s: Partial<Settings>) => void }>({
   settings: DEFAULT_SETTINGS,
