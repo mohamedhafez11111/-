@@ -3,7 +3,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState, type ReactNode } from "react";
 import { Icon } from "@/components/ui/Icon";
-import { NAV, BOTTOM_NAV } from "./nav";
+import { NAV, NAV_VISIBLE, BOTTOM_NAV } from "./nav";
 import { SettingsContext, DEFAULT_SETTINGS, type Settings } from "@/lib/settings";
 import { readLS, writeLS } from "@/lib/storage";
 import { TutorPanel } from "@/components/tutor/TutorPanel";
@@ -127,9 +127,9 @@ export function AppShell({ children }: { children: ReactNode }) {
         <aside className="no-print sticky top-0 hidden h-screen flex-col gap-1 overflow-y-auto border-l line surface px-3 py-4 lg:flex">
           <div className="mb-4 px-2"><Logo /></div>
           <nav aria-label="القائمة الرئيسية" className="flex flex-col gap-0.5">
-            {NAV.map((n, i) => (
+            {NAV_VISIBLE.map((n, i) => (
               <div key={n.href}>
-                {i > 0 && NAV[i - 1].group !== n.group && <div className="mx-3 my-2 border-t line" />}
+                {i > 0 && NAV_VISIBLE[i - 1].group !== n.group && <div className="mx-3 my-2 border-t line" />}
                 <Link href={n.href} className={`flex items-center gap-3 rounded-xl px-3 py-2.5 text-[15px] font-medium transition ${isActive(path, n.href) ? "bg-brand-50 text-brand-700 dark:bg-brand-900/60 dark:text-white" : "hover:bg-black/5 dark:hover:bg-white/5"}`} aria-current={isActive(path, n.href) ? "page" : undefined}>
                   <Icon name={n.icon} size={20} />
                   {n.label}
@@ -182,7 +182,7 @@ export function AppShell({ children }: { children: ReactNode }) {
           <div className="absolute inset-0 bg-black/40" onClick={() => setDrawer(false)} />
           <div className="absolute inset-y-0 right-0 flex w-[85%] max-w-sm flex-col gap-1 overflow-y-auto surface p-4 anim-pop">
             <div className="mb-3 flex items-center justify-between"><Logo /><button className="btn btn-ghost !px-3" onClick={() => setDrawer(false)} aria-label="إغلاق"><Icon name="close" /></button></div>
-            {NAV.map((n) => (
+            {NAV_VISIBLE.map((n) => (
               <Link key={n.href} href={n.href} className={`flex items-center gap-3 rounded-xl px-3 py-3 font-medium ${isActive(path, n.href) ? "bg-brand-50 text-brand-700 dark:bg-brand-900/60 dark:text-white" : ""}`}>
                 <Icon name={n.icon} size={20} />{n.label}
               </Link>

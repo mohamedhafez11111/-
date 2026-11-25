@@ -93,6 +93,7 @@ export function usePublicContent(): { data: PublicContent; loaded: boolean; offl
   const [offline, setOffline] = useState(false);
   useEffect(() => {
     setData(readLS("public-content", EMPTY_PUBLIC));
+    if (process.env.NEXT_PUBLIC_STATIC === "1") { setLoaded(true); return; }
     fetch("/api/content", { cache: "no-store" })
       .then((r) => (r.ok ? r.json() : Promise.reject()))
       .then((d: PublicContent) => { setData({ ...EMPTY_PUBLIC, ...d }); writeLS("public-content", d); })

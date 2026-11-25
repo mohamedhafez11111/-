@@ -17,4 +17,6 @@ export const NAV: { href: string; label: string; icon: IconName; group?: "learn"
   { href: "/admin", label: "لوحة المعلم", icon: "admin", group: "admin" },
 ];
 
+export const NAV_VISIBLE = process.env.NEXT_PUBLIC_STATIC === "1" ? NAV.filter((n) => n.href !== "/admin") : NAV;
+
 export const BOTTOM_NAV = ["/", "/lessons", "/exams", "/games"];

@@ -72,7 +72,8 @@ export function TutorChat({ fullPage = false, onClose }: { fullPage?: boolean; o
 
   useEffect(() => {
     setOnline(navigator.onLine);
-    fetch("/api/tutor").then((r) => r.json()).then(setStatus).catch(() => setStatus({ available: false, reason: "offline" }));
+    if (process.env.NEXT_PUBLIC_STATIC === "1") setStatus({ available: false, reason: "static" });
+    else fetch("/api/tutor").then((r) => r.json()).then(setStatus).catch(() => setStatus({ available: false, reason: "offline" }));
     const pre = readLS<string>("tutor-prefill", "");
     if (pre) { setInput(pre); removeLS("tutor-prefill"); }
   }, []);
@@ -157,6 +158,7 @@ export function TutorChat({ fullPage = false, onClose }: { fullPage?: boolean; o
             <div className="mb-1 font-bold">المعلم الذكي غير متاح حالياً</div>
             {status?.reason === "no-key" && <p>لم يتم ربط خدمة الذكاء الاصطناعي بعد (لم يُضبط مفتاح الخدمة على الخادم). يمكن لمسؤول المنصة تفعيلها بإضافة المفتاح في إعدادات الاستضافة.</p>}
             {status?.reason === "disabled" && <p>أوقف المعلم الخدمة مؤقتاً من لوحة الإدارة.</p>}
+            {status?.reason === "static" && <p>هذه هي النسخة المبسّطة من المنصة (دون خادم)، والمعلم الذكي يعمل فقط في النسخة الكاملة المنشورة مع خادم ومفتاح خدمة الذكاء الاصطناعي.</p>}
             {status?.reason === "offline" && <p>تعذّر الوصول إلى الخادم. تحقّق من اتصالك بالإنترنت.</p>}
             <p className="mt-2">في هذه الأثناء يمكنك استخدام الأمثلة المحلولة والتلميحات في الدروس.</p>
           </div>
