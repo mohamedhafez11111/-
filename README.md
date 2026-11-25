@@ -90,6 +90,8 @@ alter table kv enable row level security;  -- لا سياسات عامة: الو
 
 ## النشر على Vercel
 
+النسخة المنشورة: https://six-phi-53.vercel.app
+
 1. اربط المستودع بـ Vercel (إطار Next.js يُكتشف تلقائياً).
 2. أضف متغيرات البيئة أعلاه في إعدادات المشروع (بما فيها Supabase لأن نظام ملفات Vercel للقراءة فقط).
 3. انشر، ثم اربط النطاق الخاص من إعدادات Domains.
