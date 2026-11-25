@@ -8,7 +8,7 @@ import { Icon } from "@/components/ui/Icon";
 import { grade, emptyResponse, correctAnswerText, isAnswered, type Response, type GradeResult } from "@/lib/grading";
 import { recordAnswer } from "@/lib/progress";
 import { generate } from "@/content/generators";
-import { BANK_QUESTIONS, skillName } from "@/content";
+import { BANK_QUESTIONS, skillName, lc } from "@/content";
 import { readLS, writeLS } from "@/lib/storage";
 
 function shuffleIdx(n: number, seed: string): number[] {
@@ -28,7 +28,7 @@ const diffColor: Record<number, string> = { 1: "bg-ok-50 text-ok-700", 2: "bg-br
 export function QuestionMeta({ q }: { q: Question }) {
   return (
     <div className="flex flex-wrap items-center gap-2 text-xs">
-      <span className="chip bg-black/5 dark:bg-white/10">الدرس {q.lessonId}</span>
+      <span className="chip bg-black/5 dark:bg-white/10">الدرس {lc(q.lessonId)}</span>
       <span className={`chip ${diffColor[q.difficulty]}`}>{DIFFICULTY_LABEL[q.difficulty]}</span>
       <span className="chip bg-black/5 dark:bg-white/10">{QTYPE_LABEL[q.type]}</span>
       <span className="chip bg-black/5 dark:bg-white/10" title="المهارة">{skillName(q.skill)}</span>
@@ -295,7 +295,7 @@ export function PracticeQuestion({ question, onDone, index, total, compact }: { 
       <QuestionBody q={q} />
       <AnswerInput q={q} r={r} set={setR} disabled={!!result} result={result} />
       {showHint && q.hint && !result && <div className="rounded-xl bg-warn-50 p-3 text-sm text-warn-700 dark:bg-warn-700/20 dark:text-warn-50">💡 <MathText text={q.hint} /></div>}
-      {showHint && !q.hint && !result && <div className="rounded-xl bg-warn-50 p-3 text-sm text-warn-700 dark:bg-warn-700/20 dark:text-warn-50">💡 راجع قاعدة مهارة «{skillName(q.skill)}» في الدرس {q.lessonId}، وحدد المعطيات والمطلوب أولاً.</div>}
+      {showHint && !q.hint && !result && <div className="rounded-xl bg-warn-50 p-3 text-sm text-warn-700 dark:bg-warn-700/20 dark:text-warn-50">💡 راجع قاعدة مهارة «{skillName(q.skill)}» في الدرس {lc(q.lessonId)}، وحدد المعطيات والمطلوب أولاً.</div>}
       {result && (
         <div className={`anim-pop rounded-xl p-4 ${result.correct ? "bg-ok-50 text-ok-700 dark:bg-ok-700/20 dark:text-ok-50" : "bg-bad-50 text-bad-700 dark:bg-bad-700/20 dark:text-bad-50"}`} role="status">
           <div className="mb-1 flex items-center gap-2 text-lg font-bold">

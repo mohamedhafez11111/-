@@ -1,7 +1,7 @@
 "use client";
 import Link from "next/link";
 import { useMemo, useState } from "react";
-import { UNITS, LESSONS, UNIT_BY_ID } from "@/content";
+import { UNITS, LESSONS, UNIT_BY_ID, lc } from "@/content";
 import { PageHeader, Bar } from "@/components/ui/bits";
 import { useProgress, lessonProgress } from "@/lib/progress";
 import { Icon } from "@/components/ui/Icon";
@@ -35,7 +35,7 @@ export default function LessonsPage() {
           const lp = lessonProgress(p, l.id);
           return (
             <Link key={l.id} href={`/lessons/${l.id}`} className="card flex gap-4 p-4 transition hover:-translate-y-0.5 hover:shadow-lg">
-              <span className="grid h-14 w-14 shrink-0 place-items-center rounded-2xl text-lg font-bold text-white" style={{ background: u.color }}><Num>{l.id}</Num></span>
+              <span className="grid h-14 w-14 shrink-0 place-items-center rounded-2xl text-lg font-bold text-white" style={{ background: u.color }}><Num>{lc(l.id)}</Num></span>
               <span className="min-w-0 flex-1 space-y-1.5">
                 <span className="block text-xs font-semibold" style={{ color: u.color }}>الوحدة <Num>{u.number}</Num>: {u.title}</span>
                 <span className="block font-bold">{l.title}</span>

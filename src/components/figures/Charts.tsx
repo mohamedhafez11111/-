@@ -69,11 +69,11 @@ export function BarChart({ labels, values, values2, legend, yLabel, color, horiz
           </g>
         );
       })}
-      {yLabel && <text x={6} y={12} fontSize={12} fontWeight={600} fill="currentColor" direction="rtl" textAnchor="start">{yLabel}</text>}
+      {yLabel && <text x={6} y={12} fontSize={12} fontWeight={600} fill="currentColor" direction="rtl" textAnchor="end">{yLabel}</text>}
       {legend && values2 && (
         <g fontSize={12} fill="currentColor">
-          <rect x={W - 150} y={H - 22} width={12} height={12} fill={color ?? PALETTE[0]} /><text x={W - 154} y={H - 12} textAnchor="end" direction="rtl">{legend[0]}</text>
-          <rect x={W - 290} y={H - 22} width={12} height={12} fill={PALETTE[2]} /><text x={W - 294} y={H - 12} textAnchor="end" direction="rtl">{legend[1]}</text>
+          <rect x={W - 150} y={H - 22} width={12} height={12} fill={color ?? PALETTE[0]} /><text x={W - 154} y={H - 12} textAnchor="start" direction="rtl">{legend[0]}</text>
+          <rect x={W - 290} y={H - 22} width={12} height={12} fill={PALETTE[2]} /><text x={W - 294} y={H - 12} textAnchor="start" direction="rtl">{legend[1]}</text>
         </g>
       )}
     </svg>
@@ -124,7 +124,7 @@ export function BoxPlot({ five, range, label, second }: { five: [number, number,
       <line x1={X(fv[4])} x2={X(fv[4])} y1={y - 12} y2={y + 12} stroke="currentColor" strokeWidth={2} />
       <rect x={X(fv[1])} y={y - 22} width={Math.max(1, X(fv[3]) - X(fv[1]))} height={44} fill={col} fillOpacity={0.25} stroke={col} strokeWidth={2} rx={3} />
       <line x1={X(fv[2])} x2={X(fv[2])} y1={y - 22} y2={y + 22} stroke={col} strokeWidth={3} />
-      {lab && <text x={X(fv[4]) + 6 > W - 60 ? X(fv[0]) - 6 : X(fv[4]) + 6} y={y + 4} fontSize={12} fontWeight={700} fill="currentColor" textAnchor={X(fv[4]) + 6 > W - 60 ? "end" : "start"} direction="rtl">{lab}</text>}
+      {lab && <text x={X(fv[4]) + 6 > W - 60 ? X(fv[0]) - 6 : X(fv[4]) + 6} y={y + 4} fontSize={12} fontWeight={700} fill="currentColor" textAnchor={X(fv[4]) + 6 > W - 60 ? "start" : "end"} direction="rtl">{lab}</text>}
     </g>
   );
   const axisY = H - 28;
@@ -193,7 +193,8 @@ export function CumulativeCurve({ classes, xLabel, marks, onReady }: { classes: 
   const pts: [number, number][] = [[classes[0].lower, 0]];
   for (const k of classes) { c += k.freq; pts.push([k.upper, c]); }
   const n = c;
-  const ymax = niceMax(n);
+  const unit = 10 ** Math.floor(Math.log10(Math.max(1, n))) / 2;
+  const ymax = Math.max(1, Math.ceil((n * 1.02) / unit) * unit);
   const x0 = classes[0].lower, x1 = classes[classes.length - 1].upper;
   // منحنى أملس (Catmull-Rom) يمر بالنقاط
   const smooth = (s: { X: (v: number) => number; Y: (v: number) => number }) => {

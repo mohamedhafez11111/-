@@ -1,7 +1,7 @@
 "use client";
 import Link from "next/link";
 import { LAB_META, LAB_IDS } from "@/components/labs/meta";
-import { UNIT_BY_ID } from "@/content";
+import { UNIT_BY_ID, lc } from "@/content";
 import { PageHeader } from "@/components/ui/bits";
 import { Icon } from "@/components/ui/Icon";
 
@@ -22,7 +22,7 @@ export default function LabsPage() {
                   <Link key={id} href={`/labs/${id}`} className="card flex flex-col gap-2 p-4 transition hover:-translate-y-0.5 hover:shadow-lg">
                     <div className="flex items-center gap-3">
                       <span className="grid h-11 w-11 place-items-center rounded-xl text-white" style={{ background: u.color }}><Icon name={m.icon} /></span>
-                      <div><div className="font-bold">{m.title}</div><div className="text-xs muted">الدرس {m.lessons.join("، ")}</div></div>
+                      <div><div className="font-bold">{m.title}</div><div className="text-xs muted">الدرس {m.lessons.map(lc).join("، ")}</div></div>
                     </div>
                     <p className="text-sm muted">{m.desc}</p>
                   </Link>

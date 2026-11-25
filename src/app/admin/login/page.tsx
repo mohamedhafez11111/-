@@ -1,10 +1,8 @@
 "use client";
 import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
 import { Icon } from "@/components/ui/Icon";
 
 export default function AdminLogin() {
-  const router = useRouter();
   const [role, setRole] = useState<"admin" | "teacher">("admin");
   const [password, setPassword] = useState("");
   const [err, setErr] = useState("");
@@ -19,7 +17,7 @@ export default function AdminLogin() {
       const r = await fetch("/api/admin/login", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ role, password }) });
       const j = await r.json();
       if (!r.ok) setErr(j.error ?? "تعذّر الدخول");
-      else router.push("/admin");
+      else window.location.assign("/admin");
     } catch { setErr("تعذّر الاتصال بالخادم."); }
     finally { setBusy(false); }
   };

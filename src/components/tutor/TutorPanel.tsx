@@ -4,7 +4,7 @@ import { usePathname } from "next/navigation";
 import { Icon } from "@/components/ui/Icon";
 import { MathText } from "@/components/ui/MathText";
 import { readLS, removeLS, useLocal } from "@/lib/storage";
-import { LESSON_BY_ID, LESSONS } from "@/content";
+import { LESSON_BY_ID, LESSONS, lc } from "@/content";
 
 interface Msg { role: "user" | "assistant"; content: string; image?: string; ts: number }
 interface Chat { id: string; title: string; lessonId?: string; messages: Msg[]; updated: number }
@@ -146,7 +146,7 @@ export function TutorChat({ fullPage = false, onClose }: { fullPage?: boolean; o
           <span className="muted shrink-0">الدرس:</span>
           <select className="input !min-h-[36px] !py-1 text-sm" value={lessonId ?? ""} onChange={(e) => setLessonId(e.target.value || undefined)}>
             <option value="">عام (كل المنهج)</option>
-            {LESSONS.map((l) => <option key={l.id} value={l.id}>{l.id} {l.title}</option>)}
+            {LESSONS.map((l) => <option key={l.id} value={l.id}>{lc(l.id)} {l.title}</option>)}
           </select>
         </label>
       </div>
@@ -165,7 +165,7 @@ export function TutorChat({ fullPage = false, onClose }: { fullPage?: boolean; o
         {!active && !unavailable && (
           <div className="space-y-3 text-sm">
             <p>مرحباً! أنا معلمك الذكي. اسألني عن أي فكرة في دروس الفصل الأول، أو أرسل مسألة (نصاً أو صورة) وسأساعدك خطوة بخطوة.</p>
-            {lessonId && <p className="rounded-lg bg-brand-50 p-2 text-brand-800 dark:bg-brand-900/40 dark:text-white">سأركّز على درس {lessonId}: {LESSON_BY_ID[lessonId]?.title}</p>}
+            {lessonId && <p className="rounded-lg bg-brand-50 p-2 text-brand-800 dark:bg-brand-900/40 dark:text-white">سأركّز على درس {lc(lessonId)}: {LESSON_BY_ID[lessonId]?.title}</p>}
             {chats.length > 0 && (
               <div>
                 <div className="mb-1 font-semibold">محادثاتك السابقة (محفوظة على هذا الجهاز):</div>

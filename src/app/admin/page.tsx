@@ -1,7 +1,6 @@
 "use client";
 import { useEffect, useMemo, useState } from "react";
-import { useRouter } from "next/navigation";
-import { LESSONS, LESSON_BY_ID, BANK_QUESTIONS, UNITS, SKILLS } from "@/content";
+import { LESSONS, LESSON_BY_ID, BANK_QUESTIONS, UNITS, SKILLS, lc } from "@/content";
 import { CURRICULUM_NOTES } from "@/content/curriculum";
 import type { Question } from "@/content/types";
 import { DIFFICULTY_LABEL, QTYPE_LABEL } from "@/content/types";
@@ -28,12 +27,11 @@ function download(name: string, content: string, type: string) {
 const csvCell = (v: unknown) => `"${String(v ?? "").replace(/"/g, '""')}"`;
 
 export default function AdminPage() {
-  const router = useRouter();
   const [data, setData] = useState<Data | null>(null);
   const [tab, setTab] = useState<(typeof TABS)[number][0]>("overview");
   const [msg, setMsg] = useState<{ ok: boolean; t: string } | null>(null);
 
-  const load = () => fetch("/api/admin/data").then(async (r) => { if (r.status === 401) { router.push("/admin/login"); return; } setData(await r.json()); });
+  const load = () => fetch("/api/admin/data").then(async (r) => { if (r.status === 401) { window.location.assign("/admin/login"); return; } setData(await r.json()); });
   useEffect(() => { load(); }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   const save = async <K extends keyof StoreShape>(key: K, value: StoreShape[K]) => {
@@ -44,7 +42,7 @@ export default function AdminPage() {
     setTimeout(() => setMsg(null), 4000);
     return r.ok;
   };
-  const logout = async () => { await fetch("/api/admin/logout", { method: "POST" }); router.push("/admin/login"); };
+  const logout = async () => { await fetch("/api/admin/logout", { method: "POST" }); window.location.assign("/admin/login"); };
 
   if (!data) return <div className="p-8 text-center muted">جارٍ التحميل…</div>;
   return (
@@ -100,7 +98,7 @@ function LessonsAdmin({ notes, save }: { notes: LessonNote[]; save: (v: LessonNo
   return (
     <div className="grid gap-4 lg:grid-cols-2">
       <div className="card space-y-3 p-5">
-        <select className="input" value={id} onChange={(e) => setId(e.target.value)}>{LESSONS.map((x) => <option key={x.id} value={x.id}>{x.id} {x.title}</option>)}</select>
+        <select className="input" value={id} onChange={(e) => setId(e.target.value)}>{LESSONS.map((x) => <option key={x.id} value={x.id}>{lc(x.id)} {x.title}</option>)}</select>
         <p className="text-xs muted">المحتوى الأساسي للدروس مطابق للكتاب ومراجَع في الكود. أضف هنا شرحاً إضافياً أو ملاحظة أو مثالاً محلولاً يظهر للطلاب أعلى صفحة الدرس.</p>
         <label className="block"><span className="mb-1 block text-sm font-semibold">ملاحظة المعلم</span><textarea className="input min-h-[80px]" value={draft.teacherNote} onChange={(e) => setDraft({ ...draft, teacherNote: e.target.value })} /></label>
         <label className="block"><span className="mb-1 block text-sm font-semibold">شرح إضافي (يدعم \frac و ^)</span><textarea className="input min-h-[120px]" value={draft.extraExplanation} onChange={(e) => setDraft({ ...draft, extraExplanation: e.target.value })} /></label>
@@ -112,7 +110,7 @@ function LessonsAdmin({ notes, save }: { notes: LessonNote[]; save: (v: LessonNo
         </div>
       </div>
       <div className="card space-y-2 p-5 text-sm">
-        <h3 className="font-bold">بنية الدرس {l.id}: {l.title}</h3>
+        <h3 className="font-bold">بنية الدرس {lc(l.id)}: {l.title}</h3>
         <p>كتاب الطالب ص {l.sbPage} · كتاب النشاط ص {l.abPages}</p>
         <p><b>الأهداف:</b> {l.objectives.length} · <b>الأقسام:</b> {l.sections.length} · <b>الأمثلة:</b> {l.examples.length} · <b>المهارات:</b> {l.skills.map((s) => s.name).join("، ")}</p>
         <div className="rounded-lg border line p-3"><b>معاينة الشرح الإضافي:</b><MathText as="div" className="mt-1 whitespace-pre-line" text={draft.extraExplanation || "—"} /></div>
@@ -139,7 +137,7 @@ function QuestionsAdmin({ data, save }: { data: Data; save: <K extends keyof Sto
   return (
     <div className="space-y-4">
       <div className="flex flex-wrap gap-2">
-        <select className="input max-w-sm" value={lesson} onChange={(e) => setLesson(e.target.value)}>{LESSONS.map((l) => <option key={l.id} value={l.id}>{l.id} {l.title}</option>)}</select>
+        <select className="input max-w-sm" value={lesson} onChange={(e) => setLesson(e.target.value)}>{LESSONS.map((l) => <option key={l.id} value={l.id}>{lc(l.id)} {l.title}</option>)}</select>
         <button className="btn btn-primary" onClick={() => setEditing(blank())}><Icon name="plus" size={18} /> سؤال جديد</button>
         <button className="btn btn-ghost" onClick={() => exportQ("csv")}>تصدير CSV</button>
         <button className="btn btn-ghost" onClick={() => exportQ("json")}>تصدير JSON</button>
@@ -208,7 +206,7 @@ function ExamsAdmin({ exams, save }: { exams: TeacherExam[]; save: (v: TeacherEx
         <h3 className="font-bold">إنشاء اختبار</h3>
         <input className="input" placeholder="عنوان الاختبار" value={d.title} onChange={(e) => setD({ ...d, title: e.target.value })} />
         <div className="max-h-56 space-y-1 overflow-y-auto rounded-xl border line p-2 text-sm">
-          {UNITS.map((u) => <div key={u.id}><div className="font-semibold">الوحدة {u.number}</div>{u.lessonIds.map((id) => <label key={id} className="flex items-center gap-2 pr-3"><input type="checkbox" className="accent-brand-600" checked={d.lessonIds.includes(id)} onChange={(e) => setD({ ...d, lessonIds: e.target.checked ? [...d.lessonIds, id] : d.lessonIds.filter((x) => x !== id) })} />{id} {LESSON_BY_ID[id].title}</label>)}</div>)}
+          {UNITS.map((u) => <div key={u.id}><div className="font-semibold">الوحدة {u.number}</div>{u.lessonIds.map((id) => <label key={id} className="flex items-center gap-2 pr-3"><input type="checkbox" className="accent-brand-600" checked={d.lessonIds.includes(id)} onChange={(e) => setD({ ...d, lessonIds: e.target.checked ? [...d.lessonIds, id] : d.lessonIds.filter((x) => x !== id) })} />{lc(id)} {LESSON_BY_ID[id].title}</label>)}</div>)}
         </div>
         <div className="grid grid-cols-2 gap-2"><label className="text-sm">عدد الأسئلة<input type="number" className="input" value={d.count} onChange={(e) => setD({ ...d, count: Number(e.target.value) })} /></label><label className="text-sm">الزمن (دقيقة)<input type="number" className="input" value={d.minutes} onChange={(e) => setD({ ...d, minutes: Number(e.target.value) })} /></label></div>
         <div className="flex flex-wrap gap-1.5">{([1, 2, 3, 4] as const).map((x) => <button key={x} className={`chip !py-1.5 ${d.difficulty.includes(x) ? "bg-brand-600 text-white" : "bg-black/5"}`} onClick={() => setD({ ...d, difficulty: d.difficulty.includes(x) ? d.difficulty.filter((y) => y !== x) : [...d.difficulty, x] })}>{DIFFICULTY_LABEL[x]}</button>)}</div>
@@ -218,7 +216,7 @@ function ExamsAdmin({ exams, save }: { exams: TeacherExam[]; save: (v: TeacherEx
         {exams.length === 0 && <p className="muted">لا توجد اختبارات بعد.</p>}
         {exams.map((e) => (
           <div key={e.id} className="card flex flex-wrap items-center justify-between gap-2 p-3 text-sm">
-            <div><b>{e.title}</b><div className="muted">الدروس: {e.lessonIds.join("، ")} · {e.count} سؤالاً · {e.minutes} دقيقة</div></div>
+            <div><b>{e.title}</b><div className="muted">الدروس: {e.lessonIds.map(lc).join("، ")} · {e.count} سؤالاً · {e.minutes} دقيقة</div></div>
             <div className="flex gap-1.5">
               <button className="btn btn-soft !min-h-[36px] text-xs" onClick={() => save(exams.map((x) => (x.id === e.id ? { ...x, active: !x.active } : x)))}>{e.active ? "إيقاف" : "تفعيل"}</button>
               <button className="btn btn-ghost !min-h-[36px] text-xs" onClick={() => save(exams.filter((x) => x.id !== e.id))}>حذف</button>
@@ -292,7 +290,7 @@ function Reports({ data }: { data: Data }) {
           <div className="space-y-2 text-sm">
             <p><b>{student.name}</b>: نقاط الخبرة {student.p.xp} · دروس مكتملة {st.lessonsCompleted}/{LESSONS.length} · محاولات {st.attempts} · دقة {Math.round(st.accuracy * 100)}%</p>
             <table className="w-full text-sm"><thead><tr className="bg-black/5"><th className="p-1 text-right">المهارة</th><th className="p-1">الإتقان</th></tr></thead>
-              <tbody>{SKILLS.filter((s) => student.p.skills[s.id]).map((s) => <tr key={s.id} className="border-b line"><td className="p-1">{s.lessonId} {s.name}</td><td className="p-1 text-center">{Math.round((skillMastery(student.p, s.id) ?? 0) * 100)}%</td></tr>)}</tbody></table>
+              <tbody>{SKILLS.filter((s) => student.p.skills[s.id]).map((s) => <tr key={s.id} className="border-b line"><td className="p-1">{lc(s.lessonId)} {s.name}</td><td className="p-1 text-center">{Math.round((skillMastery(student.p, s.id) ?? 0) * 100)}%</td></tr>)}</tbody></table>
             <p><b>الاختبارات:</b> {student.p.exams.map((e) => `${e.title} (${Math.round(e.pct)}%)`).join("، ") || "—"}</p>
           </div>
         )}

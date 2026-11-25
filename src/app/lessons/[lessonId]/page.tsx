@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { LESSONS, LESSON_BY_ID } from "@/content";
+import { LESSONS, LESSON_BY_ID, lc } from "@/content";
 import { LessonView } from "@/components/lesson/LessonView";
 
 export function generateStaticParams() {
@@ -10,7 +10,7 @@ export function generateStaticParams() {
 export async function generateMetadata({ params }: { params: Promise<{ lessonId: string }> }): Promise<Metadata> {
   const { lessonId } = await params;
   const l = LESSON_BY_ID[lessonId];
-  return { title: l ? `${l.id} ${l.title}` : "درس" };
+  return { title: l ? `${lc(l.id)} ${l.title}` : "درس" };
 }
 
 export default async function LessonPage({ params }: { params: Promise<{ lessonId: string }> }) {

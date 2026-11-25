@@ -1,6 +1,6 @@
 "use client";
 import Link from "next/link";
-import { UNITS, LESSON_BY_ID, questionsOfLesson } from "@/content";
+import { UNITS, LESSON_BY_ID, questionsOfLesson, lc } from "@/content";
 import { LAB_META } from "@/components/labs/meta";
 import { useProgress, lessonProgress, skillMastery } from "@/lib/progress";
 import { PageHeader, UnitBadge, Bar } from "@/components/ui/bits";
@@ -34,7 +34,7 @@ export default function CurriculumPage() {
                     <div key={id} className="grid gap-3 p-4 md:grid-cols-[1fr_auto]">
                       <div className="space-y-2">
                         <div className="flex flex-wrap items-center gap-2">
-                          <span className="chip text-white" style={{ background: u.color }}><Num>{id}</Num></span>
+                          <span className="chip text-white" style={{ background: u.color }}><Num>{lc(id)}</Num></span>
                           <Link href={`/lessons/${id}`} className="text-lg font-bold hover:text-brand-600">{l.title}</Link>
                           {p.lessons[id]?.completed && <span className="chip bg-ok-50 text-ok-700">✔ مكتمل</span>}
                         </div>

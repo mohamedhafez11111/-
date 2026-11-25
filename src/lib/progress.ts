@@ -6,7 +6,7 @@
 import { useMemo } from "react";
 import { useLocal, readLS, writeLS } from "./storage";
 import type { Question } from "@/content/types";
-import { LESSONS, SKILL_BY_ID, UNITS, BANK_QUESTIONS } from "@/content";
+import { LESSONS, SKILL_BY_ID, UNITS, BANK_QUESTIONS, lc } from "@/content";
 
 export interface ProgressState {
   v: 1;
@@ -119,7 +119,7 @@ export function openLesson(id: string) {
     const l = p.lessons[id] ?? { opened: 0, sections: [] };
     const first = !p.lessons[id];
     let n: ProgressState = { ...p, lastLesson: id, lessons: { ...p.lessons, [id]: { ...l, opened: Date.now() } } };
-    if (first) n = addActivity(n, `بدأت درس ${id}`, `/lessons/${id}`);
+    if (first) n = addActivity(n, `بدأت درس ${lc(id)}`, `/lessons/${id}`);
     return n;
   });
 }
@@ -141,7 +141,7 @@ export function completeLesson(lessonId: string, quizPct: number) {
       xp: p.xp + (already ? 0 : XP.lessonComplete),
       lessons: { ...p.lessons, [lessonId]: { ...l, completed: l.completed ?? Date.now(), quizBest: Math.max(l.quizBest ?? 0, quizPct) } },
     };
-    n = addActivity(n, `أنهيت اختبار الدرس ${lessonId} بنسبة ${Math.round(quizPct)}%`, `/lessons/${lessonId}`);
+    n = addActivity(n, `أنهيت اختبار الدرس ${lc(lessonId)} بنسبة ${Math.round(quizPct)}%`, `/lessons/${lessonId}`);
     return n;
   });
 }

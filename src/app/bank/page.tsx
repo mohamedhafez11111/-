@@ -2,7 +2,7 @@
 import Link from "next/link";
 import { Suspense, useEffect, useMemo, useState } from "react";
 import { useSearchParams } from "next/navigation";
-import { UNITS, LESSONS, BANK_QUESTIONS, SKILLS, UNIT_BY_ID } from "@/content";
+import { UNITS, LESSONS, BANK_QUESTIONS, SKILLS, UNIT_BY_ID, lc } from "@/content";
 import { DIFFICULTY_LABEL, QTYPE_LABEL, type QuestionType } from "@/content/types";
 import { PageHeader, usePublicContent, Empty } from "@/components/ui/bits";
 import { PracticeQuestion } from "@/components/questions/QuestionCard";
@@ -54,7 +54,7 @@ function BankInner() {
           <option value="all">كل الوحدات</option>{UNITS.map((u) => <option key={u.id} value={u.id}>الوحدة {u.number}: {u.title}</option>)}
         </select>
         <select className="input" value={lesson} onChange={(e) => { setLesson(e.target.value); setSkill("all"); }} aria-label="الدرس">
-          <option value="all">كل الدروس</option>{lessons.map((l) => <option key={l.id} value={l.id}>{l.id} {l.title}</option>)}
+          <option value="all">كل الدروس</option>{lessons.map((l) => <option key={l.id} value={l.id}>{lc(l.id)} {l.title}</option>)}
         </select>
         <select className="input" value={skill} onChange={(e) => setSkill(e.target.value)} aria-label="المهارة">
           <option value="all">كل المهارات</option>{skills.map((s) => <option key={s.id} value={s.id}>{s.name}</option>)}

@@ -22,8 +22,8 @@ function Logo({ compact = false }: { compact?: boolean }) {
       </span>
       {!compact && (
         <span className="leading-tight">
-          <span className="block text-[15px] text-brand-900 dark:text-white">منصة الرياضيات التفاعلية</span>
-          <span className="block text-xs font-medium muted">الصف العاشر · الفصل الدراسي الأول</span>
+          <span className="block text-[15px] text-brand-900 dark:text-white"><span className="sm:hidden">رياضيات العاشر</span><span className="hidden sm:inline">منصة الرياضيات التفاعلية</span></span>
+          <span className="block text-xs font-medium muted"><span className="sm:hidden">الفصل الأول</span><span className="hidden sm:inline">الصف العاشر · الفصل الدراسي الأول</span></span>
         </span>
       )}
     </Link>

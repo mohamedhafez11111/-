@@ -3,7 +3,7 @@ import Link from "next/link";
 import { useState } from "react";
 import { PageHeader, Empty } from "@/components/ui/bits";
 import { useLocal } from "@/lib/storage";
-import { LESSONS, LESSON_BY_ID, QUESTION_BY_ID } from "@/content";
+import { LESSONS, LESSON_BY_ID, QUESTION_BY_ID, lc } from "@/content";
 import { MathText } from "@/components/ui/MathText";
 import { Icon } from "@/components/ui/Icon";
 import { PracticeQuestion } from "@/components/questions/QuestionCard";
@@ -58,7 +58,7 @@ export default function NotesPage() {
       <textarea className="input min-h-[90px]" placeholder={placeholder} value={draft.body} onChange={(e) => setDraft({ ...draft, body: e.target.value })} />
       <div className="flex flex-wrap gap-2">
         <select className="input max-w-xs" value={draft.lessonId} onChange={(e) => setDraft({ ...draft, lessonId: e.target.value })} aria-label="الدرس المرتبط">
-          <option value="">بدون درس محدد</option>{LESSONS.map((l) => <option key={l.id} value={l.id}>{l.id} {l.title}</option>)}
+          <option value="">بدون درس محدد</option>{LESSONS.map((l) => <option key={l.id} value={l.id}>{lc(l.id)} {l.title}</option>)}
         </select>
         <button className="btn btn-primary" onClick={add}><Icon name="plus" size={18} /> أضف</button>
       </div>
@@ -72,7 +72,7 @@ export default function NotesPage() {
         {listOf(k).map((n) => (
           <div key={n.id} className="card space-y-1 p-4">
             <div className="flex items-start justify-between gap-2"><div className="font-bold">{n.title}</div><button className="no-print muted" onClick={() => setNotes(notes.filter((x) => x.id !== n.id))} aria-label="حذف"><Icon name="trash" size={16} /></button></div>
-            {n.lessonId && <Link href={`/lessons/${n.lessonId}`} className="chip bg-brand-50 text-brand-700">{n.lessonId} {LESSON_BY_ID[n.lessonId]?.title}</Link>}
+            {n.lessonId && <Link href={`/lessons/${n.lessonId}`} className="chip bg-brand-50 text-brand-700">{lc(n.lessonId)} {LESSON_BY_ID[n.lessonId]?.title}</Link>}
             <MathText as="div" className="whitespace-pre-wrap text-sm" text={n.body} />
             <div className="text-xs muted">{new Date(n.ts).toLocaleDateString("ar-OM")}</div>
           </div>
@@ -88,7 +88,7 @@ export default function NotesPage() {
           <div key={q.id} className="card p-4">
             {practice === q.id ? <PracticeQuestion question={q} compact /> : (
               <div className="flex flex-wrap items-center justify-between gap-2">
-                <div className="min-w-0 flex-1"><span className="chip ml-2 bg-black/5">الدرس {q.lessonId}</span><MathText text={q.prompt} /></div>
+                <div className="min-w-0 flex-1"><span className="chip ml-2 bg-black/5">الدرس {lc(q.lessonId)}</span><MathText text={q.prompt} /></div>
                 <div className="no-print flex gap-1.5"><button className="btn btn-soft !min-h-[38px] text-sm" onClick={() => setPractice(q.id)}>حلّه الآن</button><button className="btn btn-ghost !min-h-[38px] text-sm" onClick={() => remove(q.id)}>إزالة</button></div>
               </div>
             )}
@@ -115,7 +115,7 @@ export default function NotesPage() {
           <details className="card p-4"><summary className="cursor-pointer font-bold">أضف قانوناً من الدروس</summary>
             <div className="mt-3 space-y-2">{LESSONS.flatMap((l) => l.rules.map((r, i) => (
               <div key={l.id + i} className="flex items-center justify-between gap-2 rounded-lg border line p-2 text-sm">
-                <span><span className="chip bg-black/5">{l.id}</span> <b>{r.title}: </b><MathText text={r.text} /></span>
+                <span><span className="chip bg-black/5">{lc(l.id)}</span> <b>{r.title}: </b><MathText text={r.text} /></span>
                 <button className="btn btn-soft !min-h-[34px] shrink-0 !px-3 text-xs" onClick={() => setNotes([{ id: Date.now().toString(36) + i, title: r.title, body: r.text, lessonId: l.id, kind: "rule", ts: Date.now() }, ...notes])}>أضف</button>
               </div>
             )))}</div>
@@ -123,12 +123,12 @@ export default function NotesPage() {
         </>)}
         {tab === "summaries" && (Object.keys(summaries).length === 0 ? <Empty title="لا توجد ملخصات محفوظة" icon="notes">احفظ ملخص أي درس من نهاية صفحة الدرس.</Empty> : (
           <div className="grid gap-3 sm:grid-cols-2">{Object.entries(summaries).map(([id, t]) => (
-            <div key={id} className="card p-4"><div className="mb-1 flex justify-between"><Link href={`/lessons/${id}`} className="font-bold text-brand-600">{id} {LESSON_BY_ID[id]?.title}</Link><button className="no-print muted" onClick={() => { const n = { ...summaries }; delete n[id]; setSummaries(n); }} aria-label="حذف"><Icon name="trash" size={16} /></button></div><pre className="whitespace-pre-wrap font-sans text-sm">{t}</pre></div>
+            <div key={id} className="card p-4"><div className="mb-1 flex justify-between"><Link href={`/lessons/${id}`} className="font-bold text-brand-600">{lc(id)} {LESSON_BY_ID[id]?.title}</Link><button className="no-print muted" onClick={() => { const n = { ...summaries }; delete n[id]; setSummaries(n); }} aria-label="حذف"><Icon name="trash" size={16} /></button></div><pre className="whitespace-pre-wrap font-sans text-sm">{t}</pre></div>
           ))}</div>
         ))}
         {tab === "lesson" && (Object.values(lessonNotes).every((v) => !v?.trim()) ? <Empty title="لا توجد ملاحظات دروس" icon="notes">اكتب ملاحظاتك في قسم الملخص داخل كل درس.</Empty> : (
           <div className="grid gap-3 sm:grid-cols-2">{Object.entries(lessonNotes).filter(([, v]) => v?.trim()).map(([id, v]) => (
-            <div key={id} className="card p-4"><Link href={`/lessons/${id}#summary`} className="font-bold text-brand-600">{id} {LESSON_BY_ID[id]?.title}</Link><p className="mt-1 whitespace-pre-wrap text-sm">{v}</p></div>
+            <div key={id} className="card p-4"><Link href={`/lessons/${id}#summary`} className="font-bold text-brand-600">{lc(id)} {LESSON_BY_ID[id]?.title}</Link><p className="mt-1 whitespace-pre-wrap text-sm">{v}</p></div>
           ))}</div>
         ))}
         {tab === "hard" && qList(hard, (id) => setHard(hard.filter((x) => x !== id)))}
@@ -141,7 +141,7 @@ export default function NotesPage() {
         {tab === "later" && (<>{noteForm("اكتب المسألة التي تريد مراجعتها لاحقاً…")}{noteList("later")}</>)}
         {tab === "bookmarks" && (bookmarks.length === 0 ? <Empty title="لا توجد علامات مرجعية" icon="bookmark">أضف علامة مرجعية من أعلى صفحة أي درس.</Empty> : (
           <div className="grid gap-2 sm:grid-cols-2">{bookmarks.map((id) => (
-            <div key={id} className="card flex items-center justify-between p-4"><Link href={`/lessons/${id}`} className="font-bold">{id} {LESSON_BY_ID[id]?.title}</Link><button className="muted" onClick={() => setBookmarks(bookmarks.filter((b) => b !== id))} aria-label="إزالة"><Icon name="trash" size={16} /></button></div>
+            <div key={id} className="card flex items-center justify-between p-4"><Link href={`/lessons/${id}`} className="font-bold">{lc(id)} {LESSON_BY_ID[id]?.title}</Link><button className="muted" onClick={() => setBookmarks(bookmarks.filter((b) => b !== id))} aria-label="إزالة"><Icon name="trash" size={16} /></button></div>
           ))}</div>
         ))}
       </div>

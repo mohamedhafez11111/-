@@ -1,7 +1,7 @@
 "use client";
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
-import { UNITS, LESSONS, BANK_QUESTIONS, LESSON_BY_ID } from "@/content";
+import { UNITS, LESSONS, BANK_QUESTIONS, LESSON_BY_ID, lc } from "@/content";
 import type { Question } from "@/content/types";
 import { PageHeader, Bar, Empty } from "@/components/ui/bits";
 import { PracticeQuestion } from "@/components/questions/QuestionCard";
@@ -47,7 +47,7 @@ function Flashcards() {
       {c && (
         <button onClick={() => setFlip(!flip)} className={`anim-pop grid min-h-[180px] w-full place-items-center rounded-2xl p-6 text-center text-xl font-bold shadow-lg transition ${flip ? "bg-ok-50 text-ok-700 dark:bg-ok-700/20 dark:text-ok-50" : "bg-gradient-to-br from-brand-500 to-brand-700 text-white"}`} key={i + String(flip)} aria-label="اقلب البطاقة">
           <div>
-            <div className="mb-2 text-xs opacity-70">الدرس {c.lesson} · {flip ? "الجواب" : "اضغط لقلب البطاقة"}</div>
+            <div className="mb-2 text-xs opacity-70">الدرس {lc(c.lesson)} · {flip ? "الجواب" : "اضغط لقلب البطاقة"}</div>
             <MathText text={flip ? c.back : c.front} />
           </div>
         </button>
@@ -120,7 +120,7 @@ export default function ReviewPage() {
           <ul className="grid gap-2 sm:grid-cols-2">
             {weak.map((s) => (
               <li key={s.id} className="flex items-center justify-between gap-2 rounded-xl border line p-3">
-                <div><div className="font-semibold">{s.name}</div><div className="text-xs muted">الدرس {s.lessonId} · دقة <Num>{`${Math.round(s.acc * 100)}%`}</Num></div></div>
+                <div><div className="font-semibold">{s.name}</div><div className="text-xs muted">الدرس {lc(s.lessonId!)} · دقة <Num>{`${Math.round(s.acc * 100)}%`}</Num></div></div>
                 <div className="flex gap-1"><Link href={`/bank?skill=${s.id}`} className="btn btn-soft !min-h-[36px] !px-3 text-xs">تدرّب</Link><Link href={`/lessons/${s.lessonId}`} className="btn btn-ghost !min-h-[36px] !px-3 text-xs">الدرس</Link></div>
               </li>
             ))}
@@ -148,7 +148,7 @@ export default function ReviewPage() {
             <div key={u.id} className="rounded-xl border line p-3">
               <div className="mb-1 flex items-center justify-between"><b style={{ color: u.color }}>الوحدة <Num>{u.number}</Num>: {u.title}</b><Link className="text-xs font-semibold text-brand-600" href={`/exams?mode=unit&unit=${u.id}`}>اختبار الوحدة</Link></div>
               <Bar value={unitMastery(p, u.id)} color={u.color} />
-              <ul className="mt-2 space-y-1 text-sm">{u.lessonIds.map((id) => <li key={id} className="flex justify-between"><Link href={`/lessons/${id}#summary`} className="hover:text-brand-600">{id} {LESSON_BY_ID[id].title}</Link><Link href={`/bank?lesson=${id}`} className="text-xs text-brand-600">أسئلة</Link></li>)}</ul>
+              <ul className="mt-2 space-y-1 text-sm">{u.lessonIds.map((id) => <li key={id} className="flex justify-between"><Link href={`/lessons/${id}#summary`} className="hover:text-brand-600">{lc(id)} {LESSON_BY_ID[id].title}</Link><Link href={`/bank?lesson=${id}`} className="text-xs text-brand-600">أسئلة</Link></li>)}</ul>
             </div>
           ))}
         </div>
@@ -174,7 +174,7 @@ export default function ReviewPage() {
         <div className="space-y-2">
           {mistakesAll.map((m, i) => (
             <details key={i} className="rounded-xl border line p-3 text-sm">
-              <summary className="cursor-pointer"><span className="chip ml-2 bg-black/5">{m.lesson}</span><MathText text={m.wrong} /></summary>
+              <summary className="cursor-pointer"><span className="chip ml-2 bg-black/5">{lc(m.lesson)}</span><MathText text={m.wrong} /></summary>
               <p className="mt-2 text-ok-700 dark:text-ok-50">✔ <MathText text={m.right} /></p>
             </details>
           ))}

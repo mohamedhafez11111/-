@@ -1,7 +1,7 @@
 "use client";
 import { Suspense, useEffect, useMemo, useState } from "react";
 import { useSearchParams } from "next/navigation";
-import { UNITS, LESSONS, BANK_QUESTIONS, QUESTION_BY_ID } from "@/content";
+import { UNITS, LESSONS, BANK_QUESTIONS, QUESTION_BY_ID, lc } from "@/content";
 import type { Question } from "@/content/types";
 import { PageHeader, usePublicContent } from "@/components/ui/bits";
 import { ExamRunner, type ExamConfig, type SavedExam } from "@/components/exams/ExamRunner";
@@ -74,7 +74,7 @@ function ExamsInner() {
     let src: Question[];
     let title: string;
     if (custom) { src = pool.filter((q) => custom.lessonIds.includes(q.lessonId)); title = custom.title; }
-    else if (kind === "lesson") { src = pool.filter((q) => q.lessonId === lesson); title = `اختبار الدرس ${lesson}`; }
+    else if (kind === "lesson") { src = pool.filter((q) => q.lessonId === lesson); title = `اختبار الدرس ${lc(lesson)}`; }
     else if (kind === "unit") { const u = UNITS.find((x) => x.id === unit)!; src = pool.filter((q) => u.lessonIds.includes(q.lessonId)); title = `اختبار الوحدة ${u.number}: ${u.title}`; }
     else if (kind === "practice") { const l = sp.get("lesson"); const u = sp.get("unit"); src = l ? pool.filter((q) => q.lessonId === l) : u ? pool.filter((q) => LESSONS.find((x) => x.id === q.lessonId)?.unitId === u) : pool; title = "اختبار تدريبي"; }
     else { src = pool; title = kind === "simulation" ? "محاكاة امتحان نهاية الفصل الدراسي الأول" : "الاختبار الشامل للفصل الدراسي الأول"; }
@@ -113,7 +113,7 @@ function ExamsInner() {
             {pub.exams.map((e) => (
               <button key={e.id} className="rounded-xl border-2 line p-3 text-right hover:border-brand-400" onClick={() => start({ title: e.title, lessonIds: e.lessonIds, count: e.count, minutes: e.minutes, difficulty: e.difficulty })}>
                 <div className="font-bold">{e.title}</div>
-                <div className="text-xs muted">الدروس: {e.lessonIds.join("، ")} · <Num>{e.count}</Num> سؤالاً · <Num>{e.minutes}</Num> دقيقة</div>
+                <div className="text-xs muted">الدروس: {e.lessonIds.map(lc).join("، ")} · <Num>{e.count}</Num> سؤالاً · <Num>{e.minutes}</Num> دقيقة</div>
               </button>
             ))}
           </div>
@@ -131,7 +131,7 @@ function ExamsInner() {
       <div className="card mt-5 grid gap-4 p-5 sm:grid-cols-2 lg:grid-cols-4">
         {kind === "lesson" && (
           <label className="block sm:col-span-2"><span className="mb-1 block text-sm font-semibold">الدرس</span>
-            <select className="input" value={lesson} onChange={(e) => setLesson(e.target.value)}>{LESSONS.map((l) => <option key={l.id} value={l.id}>{l.id} {l.title}</option>)}</select>
+            <select className="input" value={lesson} onChange={(e) => setLesson(e.target.value)}>{LESSONS.map((l) => <option key={l.id} value={l.id}>{lc(l.id)} {l.title}</option>)}</select>
           </label>
         )}
         {kind === "unit" && (

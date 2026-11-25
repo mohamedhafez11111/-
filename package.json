@@ -10,7 +10,8 @@
     "lint": "next lint",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
-    "validate:content": "vitest run tests/content.test.ts"
+    "validate:content": "vitest run tests/content.test.ts",
+    "e2e": "node tests/e2e/routes.e2e.js && node tests/e2e/flows.e2e.js"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "1.14.0",

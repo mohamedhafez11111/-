@@ -278,10 +278,11 @@ export function polyToString(p: Poly, v = "س"): string {
 
 export function factoredToString(f: Factored, v = "س"): string {
   if (f.k.isZero()) return "0";
+  const alone = f.factors.length === 1 && f.factors[0].e === 1 && f.k.isOne();
   const fs = f.factors.map(({ p, e }) => {
     const inner = polyToString(p, v);
     const single = p.deg === 1 && p.c[0].isZero(); // س فقط
-    const base = single && p.lead().isOne() ? inner : `(${inner})`;
+    const base = (single && p.lead().isOne()) || alone ? inner : `(${inner})`;
     return e > 1 ? `${base}^${e}` : base;
   });
   let k = "";

@@ -1,6 +1,6 @@
 "use client";
 import Link from "next/link";
-import { UNITS, LESSON_BY_ID, LESSONS } from "@/content";
+import { UNITS, LESSON_BY_ID, LESSONS, lc } from "@/content";
 import { useProgress, curriculumProgress, unitMastery, lessonProgress, levelOf, stats, today } from "@/lib/progress";
 import { Icon } from "@/components/ui/Icon";
 import { Ring, Bar, UnitBadge, usePublicContent } from "@/components/ui/bits";
@@ -32,7 +32,7 @@ export default function Home() {
             <h1 className="text-2xl font-bold sm:text-3xl">أهلاً بك في منصة الرياضيات التفاعلية</h1>
             <p className="max-w-xl muted">كل ما تحتاجه لرياضيات الصف العاشر – الفصل الدراسي الأول في مكان واحد: دروس تفاعلية، مختبرات، اختبارات، ألعاب، ومعلم ذكي.</p>
             <div className="flex flex-wrap gap-2 pt-2">
-              <Link href={`/lessons/${nextLesson.id}`} className="btn btn-primary"><Icon name="play" size={18} /> {ready && p.lastLesson ? "تابع التعلّم" : "ابدأ التعلّم"}: {nextLesson.id} {nextLesson.title}</Link>
+              <Link href={`/lessons/${nextLesson.id}`} className="btn btn-primary"><Icon name="play" size={18} /> {ready && p.lastLesson ? "تابع التعلّم" : "ابدأ التعلّم"}: {lc(nextLesson.id)} {nextLesson.title}</Link>
               <Link href="/curriculum" className="btn btn-ghost"><Icon name="map" size={18} /> خريطة المنهج</Link>
             </div>
           </div>

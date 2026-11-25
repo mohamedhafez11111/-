@@ -3,7 +3,7 @@ import Link from "next/link";
 import React, { useEffect, useMemo, useState } from "react";
 import type { Block, Lesson, Level, Question, WorkedExample } from "@/content/types";
 import { LEVEL_LABEL } from "@/content/types";
-import { UNIT_BY_ID, neighbours, questionsOfLesson, LESSON_BY_ID } from "@/content";
+import { UNIT_BY_ID, neighbours, questionsOfLesson, LESSON_BY_ID, lc, sc } from "@/content";
 import { MathText, plainMath, Num } from "@/components/ui/MathText";
 import { Figure } from "@/components/figures/Figure";
 import { Icon } from "@/components/ui/Icon";
@@ -113,7 +113,7 @@ function ExampleView({ ex }: { ex: WorkedExample }) {
   );
 }
 
-function Section({ id, title, children, icon }: { id: string; title: string; children: React.ReactNode; icon?: React.ReactNode }) {
+function Section({ id, title, children, icon }: { id: string; title: React.ReactNode; children: React.ReactNode; icon?: React.ReactNode }) {
   return (
     <section id={id} className="card scroll-mt-24 space-y-4 p-5">
       <h2 className="flex items-center gap-2 text-xl font-bold">{icon}{title}</h2>
@@ -150,7 +150,7 @@ export function LessonView({ lesson }: { lesson: Lesson }) {
   const saveSummary = () => {
     const key = "summaries";
     const cur = (() => { try { return JSON.parse(localStorage.getItem("m10:" + key) ?? "{}"); } catch { return {}; } })() as Record<string, string>;
-    cur[lesson.id] = `${lesson.id} ${lesson.title}\n` + lesson.summary.map((s) => "• " + plainMath(s)).join("\n") + "\n\nالقوانين:\n" + lesson.rules.map((r) => `• ${r.title}: ${plainMath(r.text)}`).join("\n");
+    cur[lesson.id] = `${lc(lesson.id)} ${lesson.title}\n` + lesson.summary.map((s) => "• " + plainMath(s)).join("\n") + "\n\nالقوانين:\n" + lesson.rules.map((r) => `• ${r.title}: ${plainMath(r.text)}`).join("\n");
     writeLS(key, cur);
     setSummarySaved(true);
   };
@@ -171,7 +171,7 @@ export function LessonView({ lesson }: { lesson: Lesson }) {
             <UnitBadge unit={unit} size={56} />
             <div className="flex-1">
               <Link href={`/curriculum#${unit.id}`} className="text-sm font-bold" style={{ color: unit.color }}>الوحدة <Num>{unit.number}</Num>: {unit.title}</Link>
-              <h1 className="text-2xl font-bold sm:text-3xl"><Num>{lesson.id}</Num> {lesson.title}</h1>
+              <h1 className="text-2xl font-bold sm:text-3xl"><Num>{lc(lesson.id)}</Num> {lesson.title}</h1>
               <div className="mt-1 text-sm muted">كتاب الطالب ص <Num>{lesson.sbPage}</Num> · كتاب النشاط ص <Num>{lesson.abPages}</Num></div>
             </div>
             <div className="no-print flex flex-wrap gap-2">
@@ -206,7 +206,7 @@ export function LessonView({ lesson }: { lesson: Lesson }) {
           <div>
             <h3 className="mb-1.5 font-bold">المتطلبات السابقة</h3>
             <ul className="list-disc space-y-1 pr-6 text-sm">
-              {lesson.prerequisites.map((pr, i) => <li key={i}>{pr.lessonId ? <Link className="text-brand-600 underline" href={`/lessons/${pr.lessonId}`}>{pr.text} (الدرس {pr.lessonId}: {LESSON_BY_ID[pr.lessonId].title})</Link> : <MathText text={pr.text} />}</li>)}
+              {lesson.prerequisites.map((pr, i) => <li key={i}>{pr.lessonId ? <Link className="text-brand-600 underline" href={`/lessons/${pr.lessonId}`}>{pr.text} (الدرس {lc(pr.lessonId)}: {LESSON_BY_ID[pr.lessonId].title})</Link> : <MathText text={pr.text} />}</li>)}
             </ul>
           </div>
           {lesson.vocabulary && (
@@ -221,7 +221,7 @@ export function LessonView({ lesson }: { lesson: Lesson }) {
         {lesson.sections.map((s) => {
           const done = doneSections.includes(s.id);
           return (
-            <Section key={s.id} id={"sec-" + s.id} title={`${s.code ? s.code + " " : ""}${s.title}`} icon={<Icon name="book" />}>
+            <Section key={s.id} id={"sec-" + s.id} title={<>{s.code && <bdi dir="ltr" className="text-brand-600"><Num>{sc(s.code)}</Num></bdi>} {s.title}</>} icon={<Icon name="book" />}>
               {s.blocks.map((b, i) => <BlockView key={i} b={b} level={level} />)}
               <div className="no-print flex justify-end">
                 <button className={`btn !min-h-[40px] text-sm ${done ? "btn-ok" : "btn-soft"}`} onClick={() => markSection(lesson.id, s.id)} disabled={done}>
@@ -292,8 +292,8 @@ export function LessonView({ lesson }: { lesson: Lesson }) {
         </Section>
 
         <nav className="no-print flex justify-between gap-2" aria-label="التنقل بين الدروس">
-          {prev ? <Link href={`/lessons/${prev.id}`} className="btn btn-ghost"><Icon name="arrow-right" size={18} /> {prev.id} {prev.title}</Link> : <span />}
-          {next ? <Link href={`/lessons/${next.id}`} className="btn btn-primary">{next.id} {next.title} <Icon name="arrow-left" size={18} /></Link> : <span />}
+          {prev ? <Link href={`/lessons/${prev.id}`} className="btn btn-ghost"><Icon name="arrow-right" size={18} /> {lc(prev.id)} {prev.title}</Link> : <span />}
+          {next ? <Link href={`/lessons/${next.id}`} className="btn btn-primary">{lc(next.id)} {next.title} <Icon name="arrow-left" size={18} /></Link> : <span />}
         </nav>
       </article>
 

@@ -59,3 +59,21 @@ export function neighbours(lessonId: string): { prev?: Lesson; next?: Lesson } {
 export function lessonLabel(id: string): string {
   return id;
 }
+
+/**
+ * رمز الدرس كما يظهر في الكتاب: الوحدة على اليمين ثم رقم الدرس (مثلاً الدرس الثاني من الوحدة الأولى يظهر «2-1»).
+ * المعرّف الداخلي يبقى "1-2"؛ هذه الدالة للعرض فقط.
+ */
+export function lc(id: string): string {
+  const m = /^(\d+)-(\d+)$/.exec(id);
+  return m ? `${m[2]}-${m[1]}` : id;
+}
+
+/**
+ * رمز الجزء من الدرس كما في الكتاب: "1-2أ" يُعرض من اليسار إلى اليمين «أ-2-1»
+ * فيُقرأ من اليمين: الوحدة 1 ثم الدرس 2 ثم الجزء أ. يُعرض داخل عنصر LTR معزول.
+ */
+export function sc(code: string): string {
+  const m = /^(\d+)-(\d+)(.*)$/.exec(code);
+  return m ? (m[3] ? `${m[3]}-${m[2]}-${m[1]}` : `${m[2]}-${m[1]}`) : code;
+}

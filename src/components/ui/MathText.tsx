@@ -131,7 +131,9 @@ export function MathText({ text, className, as = "span" }: { text: string; class
 export function Num({ children }: { children: string | number }) {
   const { settings } = useSettings();
   const s = String(children);
-  return <>{settings.digits === "eastern" ? toEasternDigits(s) : s}</>;
+  const out = settings.digits === "eastern" ? toEasternDigits(s) : s;
+  // نطاقات الأعداد والكسور (مثل 18–21 أو 3 / 19) تُعرض من اليسار إلى اليمين لتبقى مرتّبة
+  return /[0-9٠-٩]\s*[–\-/]\s*[0-9٠-٩]/.test(s) ? <bdi dir="ltr">{out}</bdi> : <>{out}</>;
 }
 
 /** تحويل الترميز إلى نص عادي (للنسخ والطباعة والذكاء الاصطناعي) */

@@ -212,8 +212,8 @@ export function Plane(props: PlaneProps) {
         {ticksY.map((v) => (v === axisX && axisY === 0 ? null : <text key={"ty" + v} x={s.X(axisY) - 6} y={s.Y(v) + 4} textAnchor="end">{s.fmt(v)}</text>))}
         {axisX === 0 && axisY === 0 && <text x={s.X(0) - 6} y={s.Y(0) + 16} textAnchor="end">{s.fmt(0)}</text>}
       </g>
-      {props.xLabel && <text x={W - pad.r} y={H - 4} textAnchor="end" fontSize={13} fontWeight={600} fill="currentColor" direction="rtl">{props.xLabel}</text>}
-      {props.yLabel && <text x={pad.l + 4} y={pad.t + 12} textAnchor="start" fontSize={13} fontWeight={600} fill="currentColor" direction="rtl">{props.yLabel}</text>}
+      {props.xLabel && <text x={W - pad.r} y={H - 4} textAnchor="start" fontSize={13} fontWeight={600} fill="currentColor" direction="rtl">{props.xLabel}</text>}
+      {props.yLabel && <text x={pad.l + 6} y={pad.t + 12} textAnchor="end" fontSize={13} fontWeight={600} fill="currentColor" direction="rtl" paintOrder="stroke" stroke="var(--surface)" strokeWidth={4}>{props.yLabel}</text>}
       {/* حدود المناطق */}
       {regions.map((q, i) => {
         // نقاط تقاطع المستقيم مع الإطار
