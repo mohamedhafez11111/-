@@ -126,3 +126,10 @@ describe("statistics (book methods)", () => {
     expect(e.q3).toBe(20);
   });
 });
+
+describe("scientific notation from JS numbers", () => {
+  it("parses 1e-5 and 2.5e+3", () => {
+    expect(calc("1e-5*2")).toBeCloseTo(2e-5);
+    expect(calc("2.5e+3")).toBe(2500);
+  });
+});

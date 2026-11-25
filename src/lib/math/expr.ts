@@ -84,7 +84,7 @@ function tokenize(src: string): Tok[] {
       let j = i;
       while (j < s.length && /[0-9.]/.test(s[j])) j++;
       // صيغة علمية 1e5
-      if (s[j] === "E" && /[-+0-9]/.test(s[j + 1] ?? "")) {
+      if ((s[j] === "E" || s[j] === "e") && (/[0-9]/.test(s[j + 1] ?? "") || (/[-+]/.test(s[j + 1] ?? "") && /[0-9]/.test(s[j + 2] ?? "")))) {
         j++;
         if (s[j] === "-" || s[j] === "+") j++;
         while (j < s.length && /[0-9]/.test(s[j])) j++;

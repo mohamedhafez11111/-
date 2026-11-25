@@ -1,0 +1,76 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --font-arabic: "IBM Plex Sans Arabic", "Noto Sans Arabic", Tahoma, system-ui, sans-serif;
+  --bg: #f6f8fb;
+  --surface: #ffffff;
+  --text: #0f2a4a;
+  --muted: #5b6b80;
+  --line: #e3e9f1;
+  --font-scale: 1;
+}
+:root[data-theme="dark"] {
+  --bg: #0c1726;
+  --surface: #13233a;
+  --text: #e8eef7;
+  --muted: #9fb0c6;
+  --line: #22354f;
+}
+html { font-size: calc(16px * var(--font-scale)); }
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-arabic);
+  -webkit-tap-highlight-color: transparent;
+}
+* { box-sizing: border-box; }
+
+/* ===== الرياضيات ===== */
+.math { unicode-bidi: plaintext; line-height: 2; }
+.frac { display: inline-flex; flex-direction: column; vertical-align: middle; text-align: center; margin: 0 .15em; line-height: 1.25; }
+.frac > .num { border-bottom: 1.5px solid currentColor; padding: 0 .2em .05em; }
+.frac > .den { padding: .05em .2em 0; }
+.sqrt { display: inline-flex; align-items: stretch; }
+.sqrt > .rad { border-top: 1.5px solid currentColor; padding: 0 .15em; }
+.math sup, .math sub { font-size: .72em; line-height: 0; }
+.ltr { direction: ltr; unicode-bidi: isolate; }
+
+/* ===== مكونات عامة ===== */
+.card { background: var(--surface); border: 1px solid var(--line); border-radius: 1.1rem; box-shadow: 0 1px 2px rgba(15,42,74,.05), 0 6px 20px rgba(15,42,74,.05); }
+.btn { display: inline-flex; align-items: center; justify-content: center; gap: .5rem; border-radius: .85rem; padding: .6rem 1rem; font-weight: 600; min-height: 44px; transition: transform .1s, background .15s, box-shadow .15s; user-select: none; }
+.btn:active { transform: scale(.98); }
+.btn:disabled { opacity: .5; cursor: not-allowed; }
+.btn-primary { background: #1d63c9; color: #fff; }
+.btn-primary:hover { background: #1a4fa1; }
+.btn-soft { background: #e8f1fe; color: #1a4fa1; }
+.btn-soft:hover { background: #d9ebff; }
+:root[data-theme="dark"] .btn-soft { background: #1b3557; color: #cfe3ff; }
+.btn-ghost { background: transparent; color: var(--text); border: 1px solid var(--line); }
+.btn-ghost:hover { background: rgba(43,125,233,.07); }
+.btn-ok { background: #16a34a; color: #fff; }
+.btn-warn { background: #f97316; color: #fff; }
+.btn-bad { background: #dc2626; color: #fff; }
+.input { width: 100%; border: 1.5px solid var(--line); background: var(--surface); color: var(--text); border-radius: .75rem; padding: .55rem .8rem; min-height: 44px; font-size: 1rem; }
+.input:focus { outline: none; border-color: #2b7de9; box-shadow: 0 0 0 3px rgba(43,125,233,.18); }
+.chip { display: inline-flex; align-items: center; gap: .3rem; border-radius: 999px; padding: .15rem .65rem; font-size: .8rem; font-weight: 600; }
+.muted { color: var(--muted); }
+.line { border-color: var(--line); }
+.surface { background: var(--surface); }
+.focus-ring:focus-visible, button:focus-visible, a:focus-visible { outline: 3px solid #4f9bf7; outline-offset: 2px; border-radius: .5rem; }
+
+@keyframes pop { 0% { transform: scale(.9); opacity: 0 } 100% { transform: scale(1); opacity: 1 } }
+.anim-pop { animation: pop .18s ease-out; }
+@keyframes fall { from { transform: translateY(-20%); } to { transform: translateY(110%); } }
+@keyframes shake { 0%,100% { transform: translateX(0) } 25% { transform: translateX(-6px) } 75% { transform: translateX(6px) } }
+.anim-shake { animation: shake .3s; }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation: none !important; transition: none !important; }
+}
+@media print {
+  .no-print { display: none !important; }
+  body { background: #fff; color: #000; }
+  .card { box-shadow: none; border-color: #ccc; }
+}
