@@ -6,6 +6,7 @@ import { Icon } from "@/components/ui/Icon";
 import { Ring, Bar, UnitBadge, usePublicContent } from "@/components/ui/bits";
 import { Num } from "@/components/ui/MathText";
 import { useTutorAvailable } from "@/lib/tutor";
+import { BRAND } from "@/content/branding";
 
 function greeting() {
   const h = new Date().getHours();
@@ -30,7 +31,16 @@ export default function Home() {
         <div className="pointer-events-none absolute -left-10 -top-10 h-48 w-48 rounded-full bg-brand-100 opacity-60 dark:bg-brand-900/40" />
         <div className="relative flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
           <div className="space-y-2">
-            <p className="font-semibold text-brand-600">{greeting()} 👋</p>
+            <div className="flex items-center gap-3">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src={BRAND.logo} alt={`شعار ${BRAND.schoolName}`} width={72} height={72} className="h-16 w-16 rounded-2xl bg-white object-contain p-1 shadow-sm sm:h-[72px] sm:w-[72px]" />
+              <div>
+                <div className="text-lg font-bold">{BRAND.schoolName}</div>
+                <div className="text-sm muted">{BRAND.governorate} · الصف العاشر – الفصل الدراسي الأول</div>
+                <div className="text-sm font-semibold text-brand-700 dark:text-brand-300">إعداد: {BRAND.teacher}</div>
+              </div>
+            </div>
+            <p className="pt-2 font-semibold text-brand-600">{greeting()} 👋</p>
             <h1 className="text-2xl font-bold sm:text-3xl">أهلاً بك في منصة الرياضيات التفاعلية</h1>
             <p className="max-w-xl muted">كل ما تحتاجه لرياضيات الصف العاشر – الفصل الدراسي الأول في مكان واحد: دروس تفاعلية، مختبرات، {tutorOn ? "اختبارات، ألعاب، ومعلم ذكي." : "اختبارات، وألعاب."}</p>
             <div className="flex flex-wrap gap-2 pt-2">

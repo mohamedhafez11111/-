@@ -1,5 +1,5 @@
 /* عامل الخدمة: تخزين الصفحات الأساسية والملفات الثابتة للعمل دون اتصال */
-const VERSION = "m10-v1";
+const VERSION = "m10-v2";
 const PAGES = ["/", "/offline", "/curriculum", "/lessons", "/labs", "/tools", "/games", "/exams", "/bank", "/review", "/notes", "/progress", "/whiteboard", "/tutor",
   "/lessons/1-1", "/lessons/1-2", "/lessons/1-3", "/lessons/1-4", "/lessons/1-5", "/lessons/2-1", "/lessons/2-2", "/lessons/2-3", "/lessons/3-1",
   "/lessons/4-1", "/lessons/4-2", "/lessons/5-1", "/lessons/5-2", "/lessons/5-3", "/lessons/6-1", "/lessons/7-1", "/lessons/7-2", "/lessons/7-3", "/lessons/8-1"];
@@ -8,7 +8,7 @@ const STATIC_RE = /\/_next\/static\/[^"'\s)]+/g;
 self.addEventListener("install", (event) => {
   event.waitUntil((async () => {
     const cache = await caches.open(VERSION);
-    const assets = new Set(["/manifest.webmanifest", "/icons/icon-192.png", "/icons/icon.svg"]);
+    const assets = new Set(["/manifest.webmanifest", "/icons/icon-192.png", "/brand/school-logo.webp"]);
     await Promise.all(PAGES.map(async (url) => {
       try {
         const res = await fetch(url, { credentials: "same-origin" });

@@ -3,11 +3,11 @@ import "./globals.css";
 import { AppShell } from "@/components/shell/AppShell";
 
 export const metadata: Metadata = {
-  title: { default: "منصة الرياضيات التفاعلية – الصف العاشر", template: "%s | منصة الرياضيات التفاعلية" },
-  description: "منصة تعليمية تفاعلية متكاملة لمادة الرياضيات للصف العاشر في سلطنة عُمان – الفصل الدراسي الأول: دروس، مختبرات، اختبارات، ألعاب، ومعلم ذكي.",
+  title: { default: "منصة الرياضيات التفاعلية – مدارس الطالب الذكي الخاصة", template: "%s | منصة الرياضيات التفاعلية" },
+  description: "منصة الرياضيات التفاعلية للصف العاشر – مدارس الطالب الذكي الخاصة، محافظة مسقط. إعداد الأستاذ محمد عبد الحافظ. دروس ومختبرات واختبارات وألعاب للفصل الدراسي الأول.",
   applicationName: "رياضيات العاشر",
   manifest: "/manifest.webmanifest",
-  icons: { icon: "/icons/icon.svg", apple: "/icons/icon-192.png" },
+  icons: { icon: "/icons/icon-192.png", apple: "/icons/apple-touch-icon.png" },
   appleWebApp: { capable: true, title: "رياضيات العاشر", statusBarStyle: "default" },
 };
 

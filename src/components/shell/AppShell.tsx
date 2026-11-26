@@ -8,6 +8,7 @@ import { SettingsContext, DEFAULT_SETTINGS, type Settings } from "@/lib/settings
 import { readLS, writeLS } from "@/lib/storage";
 import { TutorPanel } from "@/components/tutor/TutorPanel";
 import { useTutorAvailable } from "@/lib/tutor";
+import { BRAND } from "@/content/branding";
 import { useProgress, levelOf } from "@/lib/progress";
 import { Num } from "@/components/ui/MathText";
 
@@ -18,13 +19,12 @@ function isActive(path: string, href: string) {
 function Logo({ compact = false }: { compact?: boolean }) {
   return (
     <Link href="/" className="flex items-center gap-2.5 font-bold" aria-label="منصة الرياضيات التفاعلية – الرئيسية">
-      <span className="grid h-10 w-10 place-items-center rounded-xl bg-gradient-to-br from-brand-500 to-brand-800 text-white shadow">
-        <svg viewBox="0 0 32 32" width="26" height="26" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round"><path d="M6 24 L13 10 L19 18 L26 7" /><circle cx="26" cy="7" r="2.2" fill="currentColor" /></svg>
-      </span>
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img src={BRAND.logo} alt={`شعار ${BRAND.schoolName}`} width={44} height={44} className="h-11 w-11 shrink-0 rounded-xl bg-white object-contain p-0.5 shadow-sm" />
       {!compact && (
         <span className="leading-tight">
           <span className="block text-[15px] text-brand-900 dark:text-white"><span className="sm:hidden">رياضيات العاشر</span><span className="hidden sm:inline">منصة الرياضيات التفاعلية</span></span>
-          <span className="block text-xs font-medium muted"><span className="sm:hidden">الفصل الأول</span><span className="hidden sm:inline">الصف العاشر · الفصل الدراسي الأول</span></span>
+          <span className="block text-xs font-medium muted"><span className="sm:hidden">{BRAND.schoolName}</span><span className="hidden sm:inline">{BRAND.schoolName} · الصف العاشر</span></span>
         </span>
       )}
     </Link>
@@ -169,7 +169,12 @@ export function AppShell({ children }: { children: ReactNode }) {
               </div>
             ))}
           </nav>
-          <div className="mt-auto px-2 pt-4 text-xs muted">يُحفظ تقدمك على هذا الجهاز فقط.</div>
+          <div className="mt-auto space-y-1 border-t line px-2 pt-4 text-xs">
+            <div className="font-semibold">{BRAND.schoolName}</div>
+            <div className="muted">{BRAND.governorate}</div>
+            <div className="font-semibold text-brand-700 dark:text-brand-300">إعداد: {BRAND.teacher}</div>
+            <div className="muted">يُحفظ تقدمك على هذا الجهاز فقط.</div>
+          </div>
         </aside>
 
         <div className="flex min-w-0 flex-col">
@@ -188,7 +193,12 @@ export function AppShell({ children }: { children: ReactNode }) {
             </div>
           </header>
           <ConnectionBadge />
-          <main id="main" className={`flex-1 ${isBoard ? "" : "mx-auto w-full max-w-6xl px-4 pb-28 pt-5 lg:px-8 lg:pb-12"}`}>{children}</main>
+          <main id="main" className={`flex-1 ${isBoard ? "" : "mx-auto w-full max-w-6xl px-4 pb-6 pt-5 lg:px-8"}`}>{children}</main>
+          {!isBoard && (
+            <footer className="mx-auto w-full max-w-6xl px-4 pb-28 pt-2 text-center text-xs muted lg:px-8 lg:pb-8">
+              {BRAND.schoolName} – {BRAND.governorate} · إعداد: {BRAND.teacher}
+            </footer>
+          )}
         </div>
       </div>
 
