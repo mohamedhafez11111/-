@@ -90,7 +90,7 @@ alter table kv enable row level security;  -- لا سياسات عامة: الو
 
 ## النشر على Vercel
 
-النسخة المنشورة: https://six-phi-53.vercel.app
+النسخة المنشورة: https://smart-student-math10.vercel.app
 
 1. اربط المستودع بـ Vercel (إطار Next.js يُكتشف تلقائياً).
 2. أضف متغيرات البيئة أعلاه في إعدادات المشروع (بما فيها Supabase لأن نظام ملفات Vercel للقراءة فقط).
